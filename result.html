@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>心理年龄测试 - 深度成长报告</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         /* 新增样式 */
         .dimension-deep {
@@ -61,10 +62,6 @@
             margin-top: 12px;
             font-size: 13px;
         }
-        .resource-box a {
-            color: #6c8bb3;
-            text-decoration: none;
-        }
         .weekly-challenge {
             background: linear-gradient(135deg, #f0f4fa 0%, #e8eff7 100%);
             border-radius: 20px;
@@ -97,11 +94,55 @@
             cursor: pointer;
             font-size: 13px;
         }
+        .wechat-simple {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafd;
+            border-radius: 24px;
+            margin: 20px 0;
+        }
+        .wechat-id-box {
+            background: white;
+            border-radius: 48px;
+            padding: 12px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            border: 1px solid #e0e6ed;
+        }
+        .copy-btn-sm {
+            background: #6c8bb3;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+        @media (max-width: 480px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
+        <div class="card" id="reportCard">
             <div class="result-header">
                 <div class="psycho-age">
                     <span id="psychoAge">—</span><small>岁</small>
@@ -144,6 +185,7 @@
             </div>
             
             <div class="action-buttons">
+                <button id="saveImgBtn" class="btn btn-outline">📸 保存结果图</button>
                 <button id="shareBtn" class="btn btn-outline">📤 分享结果</button>
                 <a href="index.html" class="btn btn-outline">🔄 重新测试</a>
             </div>
@@ -329,7 +371,6 @@
         }
         
         function renderWeeklyChallenge(dimScores) {
-            // 找出最低分维度
             let minDim = null;
             let minScore = 100;
             for (let [dim, score] of Object.entries(dimScores)) {
@@ -356,61 +397,6 @@
                     <button class="growth-plan-btn" onclick="alert('选择一个维度，开启你的成长之旅')">🚀 开启挑战</button>
                 `;
             }
-        }
-        
-        function renderResult() {
-            const answers = JSON.parse(localStorage.getItem('psychage_answers'));
-            const actualAge = JSON.parse(localStorage.getItem('psychage_age'));
-            
-            if (!answers || !actualAge) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            const dimScores = calculateScores(answers);
-            const totalRaw = answers.reduce((s, a) => s + (a || 0), 0);
-            const totalScore = Math.round((totalRaw / 120) * 140);
-            const ageInfo = getAgeMapping(totalScore);
-            
-            const psychoAge = ageInfo.age;
-            const deviation = psychoAge - actualAge;
-            const deviationText = deviation >= 0 ? `成熟${deviation}岁` : `年轻${-deviation}岁`;
-            
-            document.getElementById('psychoAge').textContent = psychoAge;
-            document.getElementById('deviationText').textContent = `你的内心比实际年龄${deviationText}`;
-            document.getElementById('typeName').textContent = ageInfo.type;
-            document.getElementById('typeDesc').textContent = ageInfo.desc;
-            
-            // 标签
-            const tags = ['#心理成长', '#自我觉察', '#内在探索', '#成长计划'];
-            document.getElementById('tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
-            
-            // 深度分析
-            renderDeepAnalysis(dimScores);
-            
-            // 每周挑战
-            renderWeeklyChallenge(dimScores);
-            
-            // 雷达图
-            renderRadarChart(dimScores);
-            
-            // 分享功能
-            document.getElementById('shareBtn').onclick = () => {
-                const shareText = `我的心理年龄${psychoAge}岁，${deviationText}！已获得专属成长计划，快来测测你的心理年龄 →`;
-                if (navigator.share) {
-                    navigator.share({ title: '心理年龄测试', text: shareText, url: window.location.href });
-                } else {
-                    prompt('分享链接', window.location.href);
-                }
-            };
-            
-            // 复制微信号
-            document.getElementById('copyBtn').onclick = () => {
-                const wechatId = document.getElementById('wechatId').innerText;
-                navigator.clipboard.writeText(wechatId).then(() => {
-                    alert('微信号已复制，请打开微信添加好友，备注"成长计划"');
-                });
-            };
         }
         
         function renderRadarChart(scores) {
@@ -475,6 +461,92 @@
                 const y = centerY + (radius + 20) * Math.sin(angle);
                 ctx.fillText(labels[i], x - 20, y);
             });
+        }
+        
+        function renderResult() {
+            const answers = JSON.parse(localStorage.getItem('psychage_answers'));
+            const actualAge = JSON.parse(localStorage.getItem('psychage_age'));
+            
+            if (!answers || !actualAge) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const dimScores = calculateScores(answers);
+            const totalRaw = answers.reduce((s, a) => s + (a || 0), 0);
+            const totalScore = Math.round((totalRaw / 120) * 140);
+            const ageInfo = getAgeMapping(totalScore);
+            
+            const psychoAge = ageInfo.age;
+            const deviation = psychoAge - actualAge;
+            const deviationText = deviation >= 0 ? `成熟${deviation}岁` : `年轻${-deviation}岁`;
+            
+            document.getElementById('psychoAge').textContent = psychoAge;
+            document.getElementById('deviationText').textContent = `你的内心比实际年龄${deviationText}`;
+            document.getElementById('typeName').textContent = ageInfo.type;
+            document.getElementById('typeDesc').textContent = ageInfo.desc;
+            
+            const tags = ['#心理成长', '#自我觉察', '#内在探索', '#成长计划'];
+            document.getElementById('tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+            
+            renderDeepAnalysis(dimScores);
+            renderWeeklyChallenge(dimScores);
+            renderRadarChart(dimScores);
+            
+            // 分享功能
+            document.getElementById('shareBtn').onclick = () => {
+                const shareText = `我的心理年龄${psychoAge}岁，${deviationText}！已获得专属成长计划，快来测测你的心理年龄 →`;
+                if (navigator.share) {
+                    navigator.share({ title: '心理年龄测试', text: shareText, url: window.location.href });
+                } else {
+                    prompt('分享链接', window.location.href);
+                }
+            };
+            
+            // 复制微信号
+            document.getElementById('copyBtn').onclick = () => {
+                const wechatId = document.getElementById('wechatId').innerText;
+                navigator.clipboard.writeText(wechatId).then(() => {
+                    alert('微信号已复制，请打开微信添加好友，备注"成长计划"');
+                });
+            };
+            
+            // 保存结果图片功能
+            const saveBtn = document.getElementById('saveImgBtn');
+            if (saveBtn) {
+                saveBtn.onclick = function() {
+                    const element = document.getElementById('reportCard');
+                    const btn = this;
+                    const originalText = btn.innerText;
+                    btn.innerText = '生成中...';
+                    btn.disabled = true;
+                    
+                    // 临时隐藏按钮本身避免截图包含
+                    const originalDisplay = saveBtn.style.display;
+                    saveBtn.style.display = 'none';
+                    
+                    html2canvas(element, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: true
+                    }).then(canvas => {
+                        saveBtn.style.display = originalDisplay;
+                        const link = document.createElement('a');
+                        link.download = '心理年龄测试报告.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }).catch(error => {
+                        console.error('截图失败:', error);
+                        saveBtn.style.display = originalDisplay;
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        alert('保存失败，请重试');
+                    });
+                };
+            }
         }
         
         renderResult();
