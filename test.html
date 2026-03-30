@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>心理年龄测试 - 正在进行</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-count" id="questionCount">1 / 24</div>
+            
+            <div class="question-text" id="questionText"></div>
+            
+            <div class="options" id="options"></div>
+            
+            <div class="nav-buttons">
+                <button id="prevBtn" class="btn btn-outline">上一题</button>
+                <button id="nextBtn" class="btn btn-primary">下一题</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let userAnswers = new Array(24).fill(null);
+        let currentQuestion = 0;
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const currentAnswer = userAnswers[currentQuestion];
+            
+            document.getElementById('questionCount').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            const optionsContainer = document.getElementById('options');
+            const optionLabels = ['非常不同意', '不同意', '中立', '同意', '非常同意'];
+            
+            optionsContainer.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option ${currentAnswer === i ? 'selected' : ''}`;
+                optionDiv.onclick = () => selectAnswer(i);
+                optionDiv.innerHTML = `<div class="option-letter">${i}</div><div class="option-text">${optionLabels[i-1]}</div>`;
+                optionsContainer.appendChild(optionDiv);
+            }
+            
+            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '完成测试' : '下一题';
+        }
+        
+        function selectAnswer(value) {
+            userAnswers[currentQuestion] = value;
+            renderQuestion();
+        }
+        
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert('请先回答当前问题');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                localStorage.setItem('psychage_answers', JSON.stringify(userAnswers));
+                window.location.href = 'result.html';
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+        
+        const savedAnswers = localStorage.getItem('psychage_answers');
+        const savedAge = localStorage.getItem('psychage_age');
+        
+        if (savedAnswers) {
+            userAnswers = JSON.parse(savedAnswers);
+        }
+        if (!savedAge) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        renderQuestion();
+        document.getElementById('prevBtn').onclick = prevQuestion;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>

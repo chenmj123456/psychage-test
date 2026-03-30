@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>心理年龄测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            color: #2c3e4f;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            padding: 32px 28px;
+            margin: 16px 0;
+        }
+        .progress-bar {
+            background: #eef2f7;
+            border-radius: 20px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #8b9dc3, #6c8bb3);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        .question-count {
+            font-size: 13px;
+            color: #7e8c9e;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .question-text {
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 24px 0;
+            color: #2c3e4f;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: #f8fafd;
+            border: 1px solid #eef2f7;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option:hover {
+            background: #f0f4fa;
+            border-color: #cbd6e4;
+        }
+        .option.selected {
+            background: linear-gradient(135deg, #f0f4fa, #e8eff7);
+            border-color: #8b9dc3;
+        }
+        .option-letter {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6c8bb3;
+            margin-right: 16px;
+        }
+        .option-text {
+            flex: 1;
+            font-size: 15px;
+            color: #2c3e4f;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn {
+            display: inline-block;
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            border: none;
+            border-radius: 48px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b9dc3, #6c8bb3);
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d0d8e3;
+            color: #4a627a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-count" id="questionCount">1 / 24</div>
+            
+            <div class="question-text" id="questionText"></div>
+            
+            <div class="options" id="options"></div>
+            
+            <div class="nav-buttons">
+                <button id="prevBtn" class="btn btn-outline">上一题</button>
+                <button id="nextBtn" class="btn btn-primary">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 题库数据 ==========
+        const questions = [
+            { text: "当遇到与自己长期信念相悖的新信息时，我愿意认真审视并可能调整观点。" },
+            { text: "我愿意接触和了解与我文化背景差异很大的生活方式。" },
+            { text: "我发现自己经常用同样的方式思考问题，很难跳出固有模式。" },
+            { text: "即使面对复杂多变的情况，我也能灵活调整应对策略。" },
+            { text: "当我情绪强烈时，我能清晰地识别自己在生气、悲伤还是恐惧。" },
+            { text: "即使遇到挫折，我也能较快地平复情绪，恢复正常状态。" },
+            { text: "我常常在冲动之下说出或做出让自己后悔的事。" },
+            { text: "我能接受负面情绪的存在，而不是急于消除或压抑它们。" },
+            { text: "即使短期内没有回报，我也会坚持做那些我承诺过的事情。" },
+            { text: "我对自己的生活有清晰的长期规划，并持续为之努力。" },
+            { text: "我有时会因为缺乏动力而放弃已经开始的计划。" },
+            { text: "我会主动承担自己的错误，而不是找借口推脱。" },
+            { text: "当周围人都持某种观点而我不同时，我能坦然表达而不感到焦虑。" },
+            { text: "即使没有社交活动，我也能享受独处时光。" },
+            { text: "我常常在意别人的看法，害怕被否定或拒绝。" },
+            { text: "我能建立清晰的人际边界，不被他人的情绪过度影响。" },
+            { text: "我觉得自己的生活有明确的方向感，不是随波逐流。" },
+            { text: "我有一套相对稳定的价值观，不容易被潮流裹挟。" },
+            { text: "我时常感到迷茫，不知道生活的意义是什么。" },
+            { text: "我相信自己所做的事情对他人或社会有价值。" },
+            { text: "我能接受自己有些方面永远无法做到优秀，这并不影响我对自己的认可。" },
+            { text: "当现实不如预期时，我能调整期待而不是固执己见。" },
+            { text: "我常常抱怨环境不公，觉得是外界阻碍了我的发展。" },
+            { text: "我能与生活中的不确定性和不完美和平共处。" }
+        ];
+        
+        const optionLabels = ['非常不同意', '不同意', '中立', '同意', '非常同意'];
+        
+        // ========== 测试逻辑 ==========
+        let userAnswers = new Array(24).fill(null);
+        let currentQuestion = 0;
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const currentAnswer = userAnswers[currentQuestion];
+            
+            document.getElementById('questionCount').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option ${currentAnswer === i ? 'selected' : ''}`;
+                optionDiv.onclick = (function(score) {
+                    return function() { selectAnswer(score); };
+                })(i);
+                
+                optionDiv.innerHTML = `
+                    <div class="option-letter">${i}</div>
+                    <div class="option-text">${optionLabels[i-1]}</div>
+                `;
+                optionsContainer.appendChild(optionDiv);
+            }
+            
+            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '完成测试' : '下一题';
+        }
+        
+        function selectAnswer(value) {
+            userAnswers[currentQuestion] = value;
+            renderQuestion();
+        }
+        
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert('请先回答当前问题');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                // 保存答案并跳转
+                localStorage.setItem('psychage_answers', JSON.stringify(userAnswers));
+                // 获取保存的年龄
+                const savedAge = localStorage.getItem('psychage_age');
+                if (!savedAge) {
+                    window.location.href = 'index.html';
+                } else {
+                    window.location.href = 'result.html';
+                }
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+        
+        // 检查是否有保存的年龄
+        const savedAge = localStorage.getItem('psychage_age');
+        if (!savedAge) {
+            alert('请先输入年龄');
+            window.location.href = 'index.html';
+        } else {
+            // 加载之前保存的答案（如果有）
+            const savedAnswers = localStorage.getItem('psychage_answers');
+            if (savedAnswers) {
+                userAnswers = JSON.parse(savedAnswers);
+                // 找到第一个未回答的问题
+                for (let i = 0; i < userAnswers.length; i++) {
+                    if (userAnswers[i] === null) {
+                        currentQuestion = i;
+                        break;
+                    }
+                }
+            }
+            renderQuestion();
+        }
+        
+        document.getElementById('prevBtn').onclick = prevQuestion;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>

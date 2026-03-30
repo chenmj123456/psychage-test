@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>心理年龄测试 - 输入年龄</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card" style="text-align: center;">
+            <div class="header">
+                <h2>首先，确认你的实际年龄</h2>
+                <p class="subtitle">我们需要它来计算心理年龄偏差值</p>
+            </div>
+            
+            <div class="age-picker">
+                <select id="yearSelect"></select>
+                <select id="monthSelect"></select>
+                <select id="daySelect"></select>
+            </div>
+            
+            <button id="startTestBtn" class="btn btn-primary">进入测试 →</button>
+            
+            <p class="subtitle" style="margin-top: 24px;">
+                你的生日信息仅用于本次测试计算，不会被存储。
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const daySelect = document.getElementById('daySelect');
+        
+        const currentYear = new Date().getFullYear();
+        for (let year = currentYear; year >= 1920; year--) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year === 1995) option.selected = true;
+            yearSelect.appendChild(option);
+        }
+        
+        const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        months.forEach((month, i) => {
+            const option = document.createElement('option');
+            option.value = i + 1;
+            option.textContent = month;
+            monthSelect.appendChild(option);
+        });
+        
+        function updateDays() {
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            daySelect.innerHTML = '';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day + '日';
+                if (day === 1) option.selected = true;
+                daySelect.appendChild(option);
+            }
+        }
+        
+        yearSelect.addEventListener('change', updateDays);
+        monthSelect.addEventListener('change', updateDays);
+        updateDays();
+        
+        function calculateAge(birthYear, birthMonth, birthDay) {
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+            const monthDiff = today.getMonth() + 1 - birthMonth;
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDay)) {
+                age--;
+            }
+            return age;
+        }
+        
+        document.getElementById('startTestBtn').onclick = () => {
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            const day = parseInt(daySelect.value);
+            
+            const age = calculateAge(year, month, day);
+            if (age < 12) {
+                alert('本测试建议12岁及以上用户参与');
+                return;
+            }
+            if (age > 100) {
+                alert('请输入有效的年龄');
+                return;
+            }
+            
+            localStorage.setItem('psychage_age', JSON.stringify(age));
+            localStorage.removeItem('psychage_answers');
+            window.location.href = 'test-simple.html';
+        };
+    </script>
+</body>
+</html>

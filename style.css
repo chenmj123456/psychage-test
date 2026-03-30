@@ -1,0 +1,386 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    color: #2c3e4f;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 32px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05), 0 2px 5px rgba(0, 0, 0, 0.02);
+    padding: 32px 28px;
+    margin: 16px 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.logo {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2c3e4f;
+    letter-spacing: -0.3px;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #4a627a;
+    margin-top: 8px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e4f;
+    margin: 20px 0 12px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #7e8c9e;
+    margin-top: 12px;
+}
+
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    border: none;
+    border-radius: 48px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #f0f2f5;
+    color: #2c3e4f;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8b9dc3, #6c8bb3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108, 139, 179, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #7c8fb2, #5d7aa0);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(108, 139, 179, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #d0d8e3;
+    color: #4a627a;
+}
+
+.btn-outline:hover {
+    background: #f8f9fc;
+    border-color: #8b9dc3;
+}
+
+.age-picker {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 24px 0;
+    flex-wrap: wrap;
+}
+
+.age-picker select {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #e0e6ed;
+    border-radius: 24px;
+    background: white;
+    font-family: inherit;
+    color: #2c3e4f;
+    cursor: pointer;
+    flex: 1;
+    min-width: 100px;
+}
+
+.progress-bar {
+    background: #eef2f7;
+    border-radius: 20px;
+    height: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #8b9dc3, #6c8bb3);
+    width: 0%;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+.question-count {
+    font-size: 13px;
+    color: #7e8c9e;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.question-text {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 24px 0;
+    color: #2c3e4f;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: #f8fafd;
+    border: 1px solid #eef2f7;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option:hover {
+    background: #f0f4fa;
+    border-color: #cbd6e4;
+    transform: translateX(4px);
+}
+
+.option.selected {
+    background: linear-gradient(135deg, #f0f4fa, #e8eff7);
+    border-color: #8b9dc3;
+}
+
+.option-letter {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #6c8bb3;
+    margin-right: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.option-text {
+    flex: 1;
+    font-size: 15px;
+    color: #2c3e4f;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.nav-buttons .btn {
+    flex: 1;
+    width: auto;
+}
+
+.result-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.psycho-age {
+    font-size: 56px;
+    font-weight: 700;
+    color: #6c8bb3;
+    line-height: 1.2;
+}
+
+.psycho-age small {
+    font-size: 20px;
+    font-weight: 400;
+    color: #7e8c9e;
+}
+
+.deviation {
+    font-size: 16px;
+    color: #7e8c9e;
+    margin-top: 8px;
+}
+
+.type-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e4f;
+    margin-top: 16px;
+}
+
+.radar-container {
+    margin: 24px 0;
+    background: #fafcff;
+    border-radius: 24px;
+    padding: 16px;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.tag {
+    background: #f0f4fa;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    color: #4a627a;
+}
+
+.analysis-block {
+    background: #fafcff;
+    border-radius: 24px;
+    padding: 20px;
+    margin: 16px 0;
+}
+
+.analysis-block h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #2c3e4f;
+}
+
+.analysis-block p {
+    font-size: 14px;
+    color: #5a6f86;
+    line-height: 1.6;
+}
+
+.dimension-item {
+    margin: 16px 0;
+}
+
+.dimension-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #4a627a;
+    margin-bottom: 6px;
+}
+
+.dimension-bar {
+    background: #eef2f7;
+    border-radius: 12px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.dimension-fill {
+    background: linear-gradient(90deg, #8b9dc3, #6c8bb3);
+    width: 0%;
+    height: 100%;
+    border-radius: 12px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.action-buttons .btn {
+    flex: 1;
+    width: auto;
+}
+
+.wechat-group-card {
+    background: linear-gradient(135deg, #f8fafd 0%, #f0f4fa 100%);
+    border-radius: 28px;
+    padding: 24px 20px;
+    margin: 20px 0;
+    text-align: center;
+    border: 1px solid rgba(108, 139, 179, 0.2);
+}
+
+.wechat-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.qrcode-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 16px 0;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+    
+    .card {
+        padding: 24px 20px;
+    }
+    
+    .question-text {
+        font-size: 20px;
+    }
+    
+    .psycho-age {
+        font-size: 44px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
