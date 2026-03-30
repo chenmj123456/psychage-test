@@ -3,68 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>心理年龄测试 - 你的结果</title>
+    <title>心理年龄测试 - 深度成长报告</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .improvement-tips {
-            background: linear-gradient(135deg, #fff9e8 0%, #fff4e0 100%);
-            border-left: 4px solid #ffb347;
-            padding: 16px 20px;
+        /* 新增样式 */
+        .dimension-deep {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
             margin: 16px 0;
-            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid #eef2f7;
         }
-        .improvement-tips h4 {
-            color: #e67e22;
-            margin-bottom: 12px;
+        .dimension-deep.highlight {
+            border-left: 4px solid #6c8bb3;
+            background: linear-gradient(135deg, #fff 0%, #fafcff 100%);
+        }
+        .dimension-deep.lowlight {
+            border-left: 4px solid #ffb347;
+            background: linear-gradient(135deg, #fff 0%, #fffaf5 100%);
+        }
+        .dimension-title {
+            font-size: 18px;
+            font-weight: 600;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            margin-bottom: 12px;
         }
-        .improvement-tips ul {
-            margin-left: 20px;
+        .dimension-score {
+            font-size: 14px;
+            background: #f0f4fa;
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: #6c8bb3;
+        }
+        .psycho-tip {
+            background: #f8fafd;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin: 12px 0;
+            font-size: 13px;
             color: #5a6f86;
+            border-left: 3px solid #8b9dc3;
         }
-        .improvement-tips li {
+        .action-list {
+            margin: 12px 0 0 20px;
+        }
+        .action-list li {
             margin: 8px 0;
             line-height: 1.5;
         }
-        .dimension-card {
-            background: white;
+        .resource-box {
+            background: #f8fafd;
             border-radius: 16px;
             padding: 12px 16px;
-            margin: 8px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border: 1px solid #eef2f7;
+            margin-top: 12px;
+            font-size: 13px;
         }
-        .dimension-high {
-            border-left: 4px solid #6c8bb3;
+        .resource-box a {
+            color: #6c8bb3;
+            text-decoration: none;
         }
-        .dimension-low {
-            border-left: 4px solid #ffb347;
-        }
-        .wechat-simple {
-            text-align: center;
+        .weekly-challenge {
+            background: linear-gradient(135deg, #f0f4fa 0%, #e8eff7 100%);
+            border-radius: 20px;
             padding: 20px;
-            background: #f8fafd;
-            border-radius: 24px;
             margin: 20px 0;
+            text-align: center;
         }
-        .wechat-id-box {
-            background: white;
-            border-radius: 48px;
-            padding: 12px 20px;
-            display: inline-flex;
+        .weekly-challenge h4 {
+            margin-bottom: 12px;
+        }
+        .checklist-item {
+            display: flex;
             align-items: center;
             gap: 12px;
-            margin: 12px 0;
-            border: 1px solid #e0e6ed;
+            margin: 10px 0;
+            font-size: 14px;
         }
-        .copy-btn-sm {
+        .checklist-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .growth-plan-btn {
             background: #6c8bb3;
             color: white;
             border: none;
-            padding: 6px 16px;
+            padding: 10px 20px;
             border-radius: 30px;
+            margin-top: 12px;
             cursor: pointer;
             font-size: 13px;
         }
@@ -88,44 +117,29 @@
                 <canvas id="radarChart" width="500" height="300" style="width: 100%; height: auto;"></canvas>
             </div>
             
-            <div class="analysis-block">
-                <h4>📊 维度分析</h4>
-                <div id="dimensionAnalysis"></div>
+            <!-- 深度维度分析 + 成长方案 -->
+            <div id="deepAnalysis"></div>
+            
+            <!-- 每周成长挑战 -->
+            <div class="weekly-challenge" id="weeklyChallenge">
+                <h4>🌱 本周成长挑战</h4>
+                <div id="challengeContent"></div>
             </div>
             
-            <!-- 针对性提升建议模块 -->
-            <div class="improvement-tips" id="improvementTips">
-                <h4>🌱 专属成长建议</h4>
-                <div id="tipsContent"></div>
-            </div>
-            
-            <div class="analysis-block">
-                <h4>✨ 核心优势</h4>
-                <ul id="strengths" style="margin-left: 20px; color: #5a6f86;"></ul>
-            </div>
-            
-            <!-- 微信群引流模块（简化版，方便修改微信号）-->
+            <!-- 微信群引流模块 -->
             <div class="wechat-simple">
                 <div style="font-size: 32px;">💬</div>
                 <h3 style="margin: 8px 0;">加入「心理成长交流群」</h3>
                 <p style="font-size: 14px; color: #7e8c9e; margin-bottom: 16px;">
-                    与同频伙伴探讨心理成长，获取更多深度内容
+                    与同频伙伴一起践行成长计划，每周分享进步
                 </p>
-                
-                <!-- 方式一：微信群二维码（可选）-->
-                <div id="qrcodeArea" style="display: none;">
-                    <img id="groupQrcode" src="assets/wechat-group-qrcode.jpg" alt="群二维码" 
-                         style="width: 160px; border-radius: 16px; margin: 10px 0;">
-                </div>
-                
-                <!-- 方式二：微信号（推荐，简单直接）-->
                 <div class="wechat-id-box">
                     <span>📱 微信号：</span>
-                    <strong id="wechatId" style="color: #6c8bb3; font-size: 18px;">chenmj1221</strong>
+                    <strong id="wechatId" style="color: #6c8bb3; font-size: 18px;">psyche_helper</strong>
                     <button id="copyBtn" class="copy-btn-sm">复制</button>
                 </div>
                 <p style="font-size: 12px; color: #9aaebf;">
-                    添加时备注"心理年龄"，拉你入群
+                    添加时备注"成长计划"，拉你入群
                 </p>
             </div>
             
@@ -135,7 +149,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         // 题库数据（用于计算）
         const questionsData = [
@@ -158,55 +172,85 @@
             social: "社交自主", meaning: "意义感", reality: "现实接纳"
         };
         
-        // 针对每个维度的具体提升建议
-        const improvementAdvice = {
+        // 深度维度数据：心理学解读 + 成长方案
+        const dimensionDeepData = {
             cognitive: {
-                title: "🧠 提升认知弹性",
-                tips: [
-                    "每周接触一个你不同意的观点，尝试理解对方的3个合理之处",
-                    "学习一个完全陌生的领域知识（如编程、哲学、艺术）",
-                    "主动与观点不同的人交流，练习说'你的角度很有意思'"
-                ]
+                name: "认知弹性",
+                psychology: "认知弹性是大脑灵活切换思维模式的能力。研究表明，认知弹性高的人更少陷入思维固化，在面对变化时适应能力更强，且老年时认知衰退速度更慢。",
+                lowDesc: "你倾向于用熟悉的方式思考，对新观点有些抗拒。这并不代表你固执，而是大脑的节能机制在起作用——改变需要额外的能量。",
+                highDesc: "你的思维非常开放，能够灵活切换视角。这是保持心理年轻的重要特质，也是创造力和解决问题的核心能力。",
+                actions: [
+                    "每天接触一个你不同意的观点，先找出它的3个合理之处",
+                    "每周学一个完全陌生的概念（如区块链/冥想/极简主义）",
+                    "尝试用非惯用手刷牙/写字，激活大脑新回路",
+                    "和一个与你观点不同的人深度聊一次，只听不辩"
+                ],
+                resources: ["《思考，快与慢》", "播客：Steve说", "工具：观点日记APP"]
             },
             emotion: {
-                title: "💖 提升情绪调节",
-                tips: [
+                name: "情绪调节",
+                psychology: "情绪调节不是压抑情绪，而是识别、接纳并恰当表达情绪的能力。高情绪智力的人能更快从负面情绪中恢复，人际关系也更稳定。",
+                lowDesc: "你有时会被情绪淹没，或习惯性地压抑情绪。这可能导致内耗或突然的情绪爆发。",
+                highDesc: "你能很好地识别和管理自己的情绪，这是心理成熟的重要标志。你懂得情绪是信号，而不是敌人。",
+                actions: [
                     "每天花2分钟记录：'我现在感受到什么情绪？' 精确命名它",
                     "情绪激动时，先深呼吸10次再回应",
-                    "尝试正念冥想，观察情绪像云一样飘过"
-                ]
+                    "尝试正念冥想，观察情绪像云一样飘过",
+                    "建立情绪安全网：列出3个可以倾诉的人"
+                ],
+                resources: ["《情绪急救》", "潮汐APP（冥想）", "TED：情绪的力量"]
             },
             responsibility: {
-                title: "🎯 提升责任整合",
-                tips: [
+                name: "责任整合",
+                psychology: "责任整合是将承诺内化为自我认同的能力。成熟的人不需要外部监督就能坚持长期目标，因为他们把责任看作自我实现的一部分。",
+                lowDesc: "你可能在承诺和行动之间有落差，容易被新鲜事物吸引而放弃已有计划。",
+                highDesc: "你是一个可靠的人，你的承诺就是你的名片。这种特质让你在关系和工作中都备受信任。",
+                actions: [
                     "从小承诺开始：每天完成一件承诺的小事并打勾",
                     "制定一个90天目标，每周回顾进度",
-                    "主动承担一次团队中的责任角色"
-                ]
+                    "主动承担一次团队中的责任角色",
+                    "用'如果...就...'计划：'如果到晚上8点，我就完成今日任务'"
+                ],
+                resources: ["《原子习惯》", "Notion目标管理模板", "番茄工作法"]
             },
             social: {
-                title: "🤝 提升社交自主",
-                tips: [
+                name: "社交自主",
+                psychology: "社交自主是既能享受亲密关系，又能保持独立边界的能力。高社交自主的人不依赖他人认可，能健康地独处，也能深度连接。",
+                lowDesc: "你可能比较在意他人看法，或者在关系中容易失去自我边界。",
+                highDesc: "你拥有健康的社交边界和独处能力，这是心理成熟的重要标志。你能在关系中保持自我。",
+                actions: [
                     "练习说'不'：从小事开始拒绝，观察对方的反应",
                     "每周安排2小时完全独处，做自己喜欢的事",
-                    "写下'我的边界是什么'，并温和地维护它"
-                ]
+                    "写下'我的边界是什么'，并温和地维护它",
+                    "观察一次：当你拒绝别人后，关系是否真的变差？"
+                ],
+                resources: ["《被讨厌的勇气》", "《界限》", "练习：非暴力沟通"]
             },
             meaning: {
-                title: "🌟 提升意义感",
-                tips: [
+                name: "意义感",
+                psychology: "意义感不是找到的，而是构建的。心理学家弗兰克尔认为，即使在苦难中，人也能通过态度、创造和爱来赋予生活意义。",
+                lowDesc: "你可能偶尔感到迷茫，觉得生活缺少方向。这很正常，意义感需要持续构建。",
+                highDesc: "你拥有清晰的价值感和人生方向，这是内心稳定的基石。你知道什么对自己真正重要。",
+                actions: [
                     "写下'对我最重要的三件事'，检查日常行为是否一致",
                     "尝试帮助一个陌生人，体验利他的意义",
-                    "回顾过去一年，写下3件让你感到自豪的事"
-                ]
+                    "回顾过去一年，写下3件让你感到自豪的事",
+                    "每天问自己：'今天做的事，让我离想成为的人更近了吗？'"
+                ],
+                resources: ["《活出生命的意义》", "意义疗法工作簿", "播客：得意忘形"]
             },
             reality: {
-                title: "🌿 提升现实接纳",
-                tips: [
+                name: "现实接纳",
+                psychology: "现实接纳是区分'可控'与'不可控'的能力。斯多葛哲学认为，真正的自由来自于接受无法改变的事，专注改变能改变的事。",
+                lowDesc: "你可能对现实有较高的期待，当现实不如预期时容易产生挫败感。",
+                highDesc: "你能与不完美和平共处，这种接纳力让你更加从容。你知道改变从接纳开始。",
+                actions: [
                     "练习区分：'这件事我能改变吗？' 接受不能改变的",
                     "每天写下一件'今天的不完美'，并接纳它",
-                    "对自己说：'我允许自己不够完美'"
-                ]
+                    "对自己说：'我允许自己不够完美'",
+                    "列出3个你正在抗拒的现实，尝试换个角度看待"
+                ],
+                resources: ["《被讨厌的勇气》", "斯多葛日记", "正念练习"]
             }
         };
         
@@ -243,6 +287,77 @@
             return { age: 58, type: "智慧型心灵", desc: "你的内心如智者般通透，拥有超越年龄的洞察力。" };
         }
         
+        function renderDeepAnalysis(dimScores) {
+            const container = document.getElementById('deepAnalysis');
+            const dimOrder = ['cognitive', 'emotion', 'responsibility', 'social', 'meaning', 'reality'];
+            
+            let html = '<h3 style="margin: 20px 0 12px;">📖 深度成长分析</h3>';
+            
+            for (let dim of dimOrder) {
+                const score = dimScores[dim];
+                const data = dimensionDeepData[dim];
+                const isLow = score < 20;
+                const statusClass = isLow ? 'lowlight' : 'highlight';
+                const statusText = isLow ? '🔍 成长空间' : '✨ 你的优势';
+                const desc = isLow ? data.lowDesc : data.highDesc;
+                
+                html += `
+                    <div class="dimension-deep ${statusClass}">
+                        <div class="dimension-title">
+                            <span>${data.name}</span>
+                            <span class="dimension-score">${score}/30 ${statusText}</span>
+                        </div>
+                        <div class="psycho-tip">
+                            💡 <strong>心理学小知识</strong><br>
+                            ${data.psychology}
+                        </div>
+                        <p style="margin: 12px 0; font-size: 14px; color: #5a6f86;">${desc}</p>
+                        <div>
+                            <strong>🎯 可执行的成长行动</strong>
+                            <ul class="action-list">
+                                ${data.actions.map(action => `<li>□ ${action}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="resource-box">
+                            📚 <strong>推荐资源</strong><br>
+                            ${data.resources.join(' · ')}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+        
+        function renderWeeklyChallenge(dimScores) {
+            // 找出最低分维度
+            let minDim = null;
+            let minScore = 100;
+            for (let [dim, score] of Object.entries(dimScores)) {
+                if (score < minScore) {
+                    minScore = score;
+                    minDim = dim;
+                }
+            }
+            
+            const data = dimensionDeepData[minDim];
+            if (data && minScore < 22) {
+                const challengeActions = data.actions.slice(0, 3);
+                document.getElementById('challengeContent').innerHTML = `
+                    <p>本周重点提升：<strong>${data.name}</strong> (当前${minScore}/30)</p>
+                    <div class="checklist-item"><input type="checkbox" id="chk1"> ${challengeActions[0]}</div>
+                    <div class="checklist-item"><input type="checkbox" id="chk2"> ${challengeActions[1]}</div>
+                    <div class="checklist-item"><input type="checkbox" id="chk3"> ${challengeActions[2]}</div>
+                    <button class="growth-plan-btn" onclick="alert('截图保存你的计划，加入微信群一起打卡吧！')">📸 保存计划</button>
+                `;
+            } else {
+                document.getElementById('challengeContent').innerHTML = `
+                    <p>🎉 你的各项能力都很出色！</p>
+                    <p>试试挑战提升「${dimNames[Object.keys(dimScores)[0]]}」，让优势更突出</p>
+                    <button class="growth-plan-btn" onclick="alert('选择一个维度，开启你的成长之旅')">🚀 开启挑战</button>
+                `;
+            }
+        }
+        
         function renderResult() {
             const answers = JSON.parse(localStorage.getItem('psychage_answers'));
             const actualAge = JSON.parse(localStorage.getItem('psychage_age'));
@@ -266,70 +381,22 @@
             document.getElementById('typeName').textContent = ageInfo.type;
             document.getElementById('typeDesc').textContent = ageInfo.desc;
             
-            // 找出最低分维度（需要提升的）
-            let minDim = null;
-            let minScore = 100;
-            for (let [dim, score] of Object.entries(dimScores)) {
-                if (score < minScore) {
-                    minScore = score;
-                    minDim = dim;
-                }
-            }
-            
-            // 显示针对性建议
-            const tipsDiv = document.getElementById('tipsContent');
-            if (minDim && minScore < 22) {
-                const advice = improvementAdvice[minDim];
-                if (advice) {
-                    tipsDiv.innerHTML = `
-                        <p style="margin-bottom: 12px; font-weight: 500;">📌 你的「${dimNames[minDim]}」得分较低（${minScore}/30），以下是专属提升方案：</p>
-                        <ul>
-                            ${advice.tips.map(t => `<li>${t}</li>`).join('')}
-                        </ul>
-                        <p style="margin-top: 12px; font-size: 13px; color: #e67e22;">✨ 坚持2-4周，你会看到明显变化</p>
-                    `;
-                } else {
-                    tipsDiv.innerHTML = `<p>你的各项能力均衡发展，继续保持！</p>`;
-                }
-            } else {
-                tipsDiv.innerHTML = `<p>🎉 你的各项能力都很出色！继续保持，也可以看看其他维度的建议作为参考。</p>`;
-            }
-            
-            // 显示维度分析
-            const dimOrder = ['cognitive', 'emotion', 'responsibility', 'social', 'meaning', 'reality'];
-            const analysisHtml = dimOrder.map(dim => {
-                const score = dimScores[dim];
-                const percent = (score / 30) * 100;
-                const isLow = score < 20;
-                return `
-                    <div class="dimension-card ${isLow ? 'dimension-low' : 'dimension-high'}">
-                        <div style="display: flex; justify-content: space-between;">
-                            <strong>${dimNames[dim]}</strong>
-                            <span>${score}/30</span>
-                        </div>
-                        <div class="dimension-bar" style="margin-top: 8px;">
-                            <div class="dimension-fill" style="width: ${percent}%; height: 6px;"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('dimensionAnalysis').innerHTML = analysisHtml;
-            
-            // 显示优势（得分最高的2-3个维度）
-            const sortedDims = Object.entries(dimScores).sort((a,b) => b[1] - a[1]);
-            const strengths = sortedDims.slice(0, 3).map(([dim, score]) => dimNames[dim]);
-            document.getElementById('strengths').innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
-            
             // 标签
-            const tags = ['#心理成长', '#自我觉察', '#内在探索', '#成熟心智'];
+            const tags = ['#心理成长', '#自我觉察', '#内在探索', '#成长计划'];
             document.getElementById('tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+            
+            // 深度分析
+            renderDeepAnalysis(dimScores);
+            
+            // 每周挑战
+            renderWeeklyChallenge(dimScores);
             
             // 雷达图
             renderRadarChart(dimScores);
             
             // 分享功能
             document.getElementById('shareBtn').onclick = () => {
-                const shareText = `我的心理年龄${psychoAge}岁，${deviationText}！快来测测你的心理年龄 →`;
+                const shareText = `我的心理年龄${psychoAge}岁，${deviationText}！已获得专属成长计划，快来测测你的心理年龄 →`;
                 if (navigator.share) {
                     navigator.share({ title: '心理年龄测试', text: shareText, url: window.location.href });
                 } else {
@@ -341,7 +408,7 @@
             document.getElementById('copyBtn').onclick = () => {
                 const wechatId = document.getElementById('wechatId').innerText;
                 navigator.clipboard.writeText(wechatId).then(() => {
-                    alert('微信号已复制，请打开微信添加好友，备注"心理年龄"');
+                    alert('微信号已复制，请打开微信添加好友，备注"成长计划"');
                 });
             };
         }
