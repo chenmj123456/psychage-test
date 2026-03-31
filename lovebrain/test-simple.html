@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>恋爱认知模式评估 - 进行中</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #fdf4f0 0%, #fde8e8 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            padding: 32px 28px;
+            margin: 16px 0;
+        }
+        .progress-bar {
+            background: #eef2f7;
+            border-radius: 20px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #c94f4f, #b33a3a);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        .question-count {
+            font-size: 13px;
+            color: #7e8c9e;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .question-text {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 24px 0;
+            color: #2c3e4f;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            background: #f8fafd;
+            border: 1px solid #eef2f7;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option:hover {
+            background: #f0f4fa;
+            transform: translateX(4px);
+        }
+        .option.selected {
+            background: linear-gradient(135deg, #fdf0f0, #fde8e8);
+            border-color: #c94f4f;
+        }
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #c94f4f;
+            margin-right: 16px;
+        }
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            color: #2c3e4f;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn {
+            display: inline-block;
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            border: none;
+            border-radius: 48px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #c94f4f, #b33a3a);
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d0d8e3;
+            color: #4a627a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-count" id="questionCount">1 / 30</div>
+            
+            <div class="question-text" id="questionText"></div>
+            
+            <div class="options" id="options"></div>
+            
+            <div class="nav-buttons">
+                <button id="prevBtn" class="btn btn-outline">上一题</button>
+                <button id="nextBtn" class="btn btn-primary">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 30道题库 ==========
+        const questions = [
+            { text: "即使对方有明显的缺点，我也会自动帮他找理由解释" },
+            { text: "我觉得我的伴侣（或喜欢的人）是世界上最完美的人" },
+            { text: "我会忽略朋友对伴侣的负面评价，觉得他们不了解他" },
+            { text: "当发现对方的缺点时，我会感到失望，但很快又忘记" },
+            { text: "我会把对方的小优点放大，觉得那是他与众不同的证据" },
+            { text: "对方没及时回消息时，我会焦虑、胡思乱想" },
+            { text: "我的情绪很大程度上取决于对方的态度" },
+            { text: "和对方吵架后，我无法专心做任何事" },
+            { text: "我会反复查看对方的社交媒体动态，分析他的心情" },
+            { text: "对方心情不好时，我也会跟着低落，甚至更严重" },
+            { text: "为了维持关系，我可以放弃自己的原则和底线" },
+            { text: "我经常为了对方的需求，牺牲自己的时间和计划" },
+            { text: "即使对方做错事，我也会先道歉" },
+            { text: "我会为了迎合对方，改变自己的兴趣爱好" },
+            { text: "我很难对伴侣说不，即使心里不愿意" },
+            { text: "我愿意为对方付出一切，即使对方没要求" },
+            { text: "我觉得爱一个人就要无条件付出" },
+            { text: "我会因为对方的经济状况，主动承担更多开销" },
+            { text: "即使很累，我也会满足对方的要求" },
+            { text: "我会放弃自己的重要机会（如工作、学业），为了和对方在一起" },
+            { text: "单身的时候，我会觉得自己不完整" },
+            { text: "即使关系不健康，我也害怕分手" },
+            { text: "我很难想象一个人生活" },
+            { text: "分手后我会立刻寻找新的对象，无法忍受空窗期" },
+            { text: "想到可能要分手，我会感到恐慌甚至身体不适" },
+            { text: "分手后，我会反复回想和对方在一起的细节" },
+            { text: "我会忍不住查看前任的社交动态" },
+            { text: "分手后，我有过报复对方的想法" },
+            { text: "我很难接受不爱了这个事实，总觉得还有机会" },
+            { text: "即使已经分手很久，我还是无法开始新的感情" }
+        ];
+        
+        const optionLabels = ['完全不符合', '不太符合', '一般', '比较符合', '完全符合'];
+        
+        let userAnswers = new Array(30).fill(null);
+        let currentQuestion = 0;
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const currentAnswer = userAnswers[currentQuestion];
+            
+            document.getElementById('questionCount').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option ${currentAnswer === i ? 'selected' : ''}`;
+                optionDiv.onclick = (function(score) {
+                    return function() { selectAnswer(score); };
+                })(i);
+                
+                optionDiv.innerHTML = `
+                    <div class="option-letter">${i}</div>
+                    <div class="option-text">${optionLabels[i-1]}</div>
+                `;
+                optionsContainer.appendChild(optionDiv);
+            }
+            
+            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '完成评估' : '下一题';
+        }
+        
+        function selectAnswer(value) {
+            userAnswers[currentQuestion] = value;
+            renderQuestion();
+        }
+        
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert('请先回答当前问题');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                localStorage.setItem('lovebrain_answers', JSON.stringify(userAnswers));
+                window.location.href = 'result.html';
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+        
+        const savedAnswers = localStorage.getItem('lovebrain_answers');
+        const savedAge = localStorage.getItem('lovebrain_age');
+        
+        if (savedAnswers) {
+            userAnswers = JSON.parse(savedAnswers);
+            for (let i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === null) {
+                    currentQuestion = i;
+                    break;
+                }
+            }
+        }
+        if (!savedAge) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        renderQuestion();
+        document.getElementById('prevBtn').onclick = prevQuestion;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>
