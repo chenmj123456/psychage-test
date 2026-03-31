@@ -66,6 +66,17 @@
             margin-top: 12px;
             font-size: 13px;
         }
+        .book-recommend {
+            background: linear-gradient(135deg, #fff5f0, #ffe8e0);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border-left: 3px solid #ffb347;
+        }
+        .book-title {
+            font-weight: 600;
+            color: #c94f4f;
+        }
         .result-badge {
             background: linear-gradient(135deg, #c94f4f, #b33a3a);
             color: white;
@@ -195,13 +206,82 @@
             return scores;
         }
         
+        // 根据维度和得分推荐书籍
+        function getBookRecommendations(dimScores) {
+            const recommendations = [];
+            
+            // 理想化倾向高
+            if (dimScores.idealization >= 15) {
+                recommendations.push({
+                    dimension: "理想化倾向",
+                    books: [
+                        { title: "《亲密关系》", author: "罗兰·米勒", reason: "帮助你看清爱情的真实面貌，减少过度美化" },
+                        { title: "《爱的艺术》", author: "埃里希·弗洛姆", reason: "区分真正的爱和理想化的投射" }
+                    ]
+                });
+            }
+            
+            // 依恋焦虑高
+            if (dimScores.anxiety >= 15) {
+                recommendations.push({
+                    dimension: "依恋焦虑",
+                    books: [
+                        { title: "《依恋与成人爱情》", author: "莱文&海勒", reason: "理解你的依恋风格，学会建立安全感" },
+                        { title: "《关系的重建》", author: "阿米尔·莱文", reason: "从焦虑型依恋走向安全型" }
+                    ]
+                });
+            }
+            
+            // 边界模糊高
+            if (dimScores.boundary >= 15) {
+                recommendations.push({
+                    dimension: "边界模糊",
+                    books: [
+                        { title: "《界限》", author: "内德拉·格洛弗·塔瓦布", reason: "学会说不，建立健康的自我边界" },
+                        { title: "《被讨厌的勇气》", author: "岸见一郎", reason: "课题分离，区分自己和别人的事" }
+                    ]
+                });
+            }
+            
+            // 过度付出高
+            if (dimScores.overgiving >= 15) {
+                recommendations.push({
+                    dimension: "过度付出",
+                    books: [
+                        { title: "《取悦症》", author: "哈丽雅特·布莱克", reason: "摆脱讨好型人格，学会爱自己" },
+                        { title: "《爱得太多的女人》", author: "罗宾·诺伍德", reason: "经典著作，专门针对过度付出型" }
+                    ]
+                });
+            }
+            
+            // 分离焦虑高
+            if (dimScores.separation >= 15) {
+                recommendations.push({
+                    dimension: "分离焦虑",
+                    books: [
+                        { title: "《也许你该找个人聊聊》", author: "洛莉·戈特利布", reason: "学会面对失去和告别" },
+                        { title: "《独处的力量》", author: "安东尼·斯托尔", reason: "发现独处的美好和价值" }
+                    ]
+                });
+            }
+            
+            // 纠缠执念高
+            if (dimScores.rumination >= 15) {
+                recommendations.push({
+                    dimension: "纠缠执念",
+                    books: [
+                        { title: "《清醒地活》", author: "迈克尔·辛格", reason: "放下执念，学会放手" },
+                        { title: "《心的重建》", author: "露易丝·海", reason: "走出失恋，重建自我" }
+                    ]
+                });
+            }
+            
+            return recommendations;
+        }
+        
         function renderDeepAnalysis(scores) {
             const container = document.getElementById('deepAnalysis');
             const dimOrder = ['idealization', 'anxiety', 'boundary', 'overgiving', 'separation', 'rumination'];
-            const dimNamesMap = {
-                idealization: '理想化倾向', anxiety: '依恋焦虑', boundary: '边界清晰度',
-                overgiving: '过度付出', separation: '分离焦虑', rumination: '执念水平'
-            };
             
             let html = '<h3 style="margin: 20px 0 12px;">📖 维度深度分析</h3>';
             
@@ -234,6 +314,32 @@
                     </div>
                 `;
             }
+            
+            // 添加书籍推荐专区
+            const bookRecs = getBookRecommendations(scores);
+            if (bookRecs.length > 0) {
+                html += '<h3 style="margin: 30px 0 12px;">📚 专属书单推荐</h3>';
+                for (let rec of bookRecs) {
+                    html += `<div style="margin-bottom: 16px;"><strong style="color: #c94f4f;">📌 ${rec.dimension} 推荐阅读：</strong><br>`;
+                    for (let book of rec.books) {
+                        html += `
+                            <div class="book-recommend">
+                                <div class="book-title">《${book.title}》${book.author ? ' - ' + book.author : ''}</div>
+                                <div style="font-size: 12px; color: #7e8c9e; margin-top: 4px;">💡 ${book.reason}</div>
+                            </div>
+                        `;
+                    }
+                    html += `</div>`;
+                }
+            } else {
+                html += `
+                    <div class="book-recommend" style="margin-top: 20px;">
+                        <div class="book-title">📖 通用推荐</div>
+                        <div style="font-size: 13px;">你的恋爱认知模式整体健康！推荐阅读《亲密关系》加深理解，或分享给需要的朋友～</div>
+                    </div>
+                `;
+            }
+            
             container.innerHTML = html;
         }
         
@@ -326,7 +432,7 @@
             renderRadarChart(dimScores);
             
             document.getElementById('shareBtn').onclick = () => {
-                const shareText = `我的恋爱认知模式评估结果：${resultType.type}（${totalScore}/150），已获得专属成长方案。`;
+                const shareText = `我的恋爱认知模式评估结果：${resultType.type}（${totalScore}/150），已获得专属成长方案和书单。`;
                 if (navigator.share) {
                     navigator.share({ title: '恋爱认知模式评估', text: shareText, url: window.location.href });
                 } else {
@@ -361,7 +467,7 @@
                     }).then(canvas => {
                         saveBtn.style.display = originalDisplay;
                         const link = document.createElement('a');
-                        link.download = '恋爱认知模式评估报告.png';
+                        link.download = '恋爱认知评估报告.png';
                         link.href = canvas.toDataURL('image/png');
                         link.click();
                         btn.innerText = originalText;
