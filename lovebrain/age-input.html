@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>恋爱认知模式评估 - 基本信息</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fdf4f0 0%, #fde8e8 100%);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #c94f4f, #b33a3a);
+            box-shadow: 0 4px 12px rgba(201, 79, 79, 0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #b33a3a, #9e2e2e);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" style="text-align: center;">
+            <div class="header">
+                <h2>基本信息</h2>
+                <p class="subtitle">用于结果分析</p>
+            </div>
+            
+            <div class="age-picker">
+                <select id="yearSelect"></select>
+                <select id="monthSelect"></select>
+                <select id="daySelect"></select>
+            </div>
+            
+            <div style="margin: 16px 0;">
+                <label style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <input type="radio" name="gender" value="female" checked> 女性
+                    <input type="radio" name="gender" value="male"> 男性
+                    <input type="radio" name="gender" value="other"> 不愿透露
+                </label>
+            </div>
+            
+            <button id="startTestBtn" class="btn btn-primary">开始评估 →</button>
+            
+            <p class="subtitle" style="margin-top: 24px;">
+                信息仅用于本次评估，不会被存储
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const daySelect = document.getElementById('daySelect');
+        
+        const currentYear = new Date().getFullYear();
+        for (let year = currentYear; year >= 1920; year--) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year === 1995) option.selected = true;
+            yearSelect.appendChild(option);
+        }
+        
+        const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        months.forEach((month, i) => {
+            const option = document.createElement('option');
+            option.value = i + 1;
+            option.textContent = month;
+            monthSelect.appendChild(option);
+        });
+        
+        function updateDays() {
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            daySelect.innerHTML = '';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day + '日';
+                if (day === 1) option.selected = true;
+                daySelect.appendChild(option);
+            }
+        }
+        
+        yearSelect.addEventListener('change', updateDays);
+        monthSelect.addEventListener('change', updateDays);
+        updateDays();
+        
+        function calculateAge(birthYear, birthMonth, birthDay) {
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+            const monthDiff = today.getMonth() + 1 - birthMonth;
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDay)) age--;
+            return age;
+        }
+        
+        document.getElementById('startTestBtn').onclick = () => {
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            const day = parseInt(daySelect.value);
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            
+            const age = calculateAge(year, month, day);
+            if (age < 16) { alert('本评估建议16岁及以上用户参与'); return; }
+            if (age > 100) { alert('请输入有效年龄'); return; }
+            
+            localStorage.setItem('lovebrain_age', JSON.stringify(age));
+            localStorage.setItem('lovebrain_gender', gender);
+            localStorage.removeItem('lovebrain_answers');
+            window.location.href = 'test.html';
+        };
+    </script>
+</body>
+</html>
