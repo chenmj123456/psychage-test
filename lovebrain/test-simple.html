@@ -145,8 +145,8 @@
     </div>
 
     <script>
-        // 定义题库
-        var questions = [
+        // 定义30道题库
+        var questionsList = [
             "即使对方有明显的缺点，我也会自动帮他找理由解释",
             "我觉得我的伴侣（或喜欢的人）是世界上最完美的人",
             "我会忽略朋友对伴侣的负面评价，觉得他们不了解他",
@@ -181,15 +181,15 @@
         
         var optionLabels = ['完全不符合', '不太符合', '一般', '比较符合', '完全符合'];
         var userAnswers = new Array(30).fill(null);
-        var currentQuestion = 0;
+        var currentIndex = 0;
         
-        function renderQuestion() {
-            var qText = questions[currentQuestion];
-            var currentAnswer = userAnswers[currentQuestion];
+        function renderCurrentQuestion() {
+            var questionText = questionsList[currentIndex];
+            var currentAnswer = userAnswers[currentIndex];
             
-            document.getElementById('questionCount').innerHTML = (currentQuestion + 1) + ' / ' + questions.length;
-            document.getElementById('questionText').innerHTML = qText;
-            var percent = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('questionCount').innerHTML = (currentIndex + 1) + ' / ' + questionsList.length;
+            document.getElementById('questionText').innerHTML = questionText;
+            var percent = ((currentIndex + 1) / questionsList.length) * 100;
             document.getElementById('progressFill').style.width = percent + '%';
             
             var optionsContainer = document.getElementById('options');
@@ -201,6 +201,7 @@
                 if (currentAnswer === i) {
                     optionDiv.className = 'option selected';
                 }
+                
                 optionDiv.onclick = (function(score) {
                     return function() { selectAnswer(score); };
                 })(i);
@@ -210,14 +211,14 @@
             }
             
             var prevBtn = document.getElementById('prevBtn');
-            if (currentQuestion === 0) {
+            if (currentIndex === 0) {
                 prevBtn.style.visibility = 'hidden';
             } else {
                 prevBtn.style.visibility = 'visible';
             }
             
             var nextBtn = document.getElementById('nextBtn');
-            if (currentQuestion === questions.length - 1) {
+            if (currentIndex === questionsList.length - 1) {
                 nextBtn.innerHTML = '完成评估';
             } else {
                 nextBtn.innerHTML = '下一题';
@@ -225,32 +226,33 @@
         }
         
         function selectAnswer(value) {
-            userAnswers[currentQuestion] = value;
-            renderQuestion();
+            userAnswers[currentIndex] = value;
+            renderCurrentQuestion();
         }
         
-        function nextQuestion() {
-            if (userAnswers[currentQuestion] === null) {
+        function goNext() {
+            if (userAnswers[currentIndex] === null) {
                 alert('请先回答当前问题');
                 return;
             }
             
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                renderQuestion();
+            if (currentIndex < questionsList.length - 1) {
+                currentIndex = currentIndex + 1;
+                renderCurrentQuestion();
             } else {
                 localStorage.setItem('lovebrain_answers', JSON.stringify(userAnswers));
                 window.location.href = 'result.html';
             }
         }
         
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                renderQuestion();
+        function goPrev() {
+            if (currentIndex > 0) {
+                currentIndex = currentIndex - 1;
+                renderCurrentQuestion();
             }
         }
         
+        // 检查是否已保存答案
         var savedAnswers = localStorage.getItem('lovebrain_answers');
         var savedAge = localStorage.getItem('lovebrain_age');
         
@@ -258,18 +260,19 @@
             userAnswers = JSON.parse(savedAnswers);
             for (var i = 0; i < userAnswers.length; i++) {
                 if (userAnswers[i] === null) {
-                    currentQuestion = i;
+                    currentIndex = i;
                     break;
                 }
             }
         }
         
+        // 检查是否有年龄记录
         if (!savedAge) {
             window.location.href = 'index.html';
         } else {
-            renderQuestion();
-            document.getElementById('prevBtn').onclick = prevQuestion;
-            document.getElementById('nextBtn').onclick = nextQuestion;
+            renderCurrentQuestion();
+            document.getElementById('prevBtn').onclick = goPrev;
+            document.getElementById('nextBtn').onclick = goNext;
         }
     </script>
 </body>
