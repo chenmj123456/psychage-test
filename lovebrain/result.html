@@ -168,7 +168,7 @@
                 </p>
                 <div class="wechat-id-box">
                     <span>📱 微信号：</span>
-                    <strong id="wechatId" style="color: #c94f4f; font-size: 18px;">chenmj1221</strong>
+                    <strong id="wechatId" style="color: #c94f4f; font-size: 18px;">psyche_helper</strong>
                     <button id="copyBtn" class="copy-btn-sm">复制</button>
                 </div>
                 <p style="font-size: 12px; color: #9aaebf;">
@@ -190,109 +190,133 @@
 
     <script>
         function calculateScores(answers) {
-            const scores = {
+            var scores = {
                 idealization: 0, anxiety: 0, boundary: 0,
                 overgiving: 0, separation: 0, rumination: 0
             };
             
-            answers.forEach((answer, idx) => {
-                if (answer === null) return;
-                const q = questions[idx];
-                let score = answer;
+            for (var idx = 0; idx < answers.length; idx++) {
+                var answer = answers[idx];
+                if (answer === null) continue;
+                var q = questions[idx];
+                var score = answer;
                 if (q.reverse) score = 6 - answer;
                 scores[q.dimension] += score;
-            });
+            }
             
             return scores;
         }
         
-        // 根据维度和得分推荐书籍
-        function getBookRecommendations(dimScores) {
-            const recommendations = [];
+        // 根据维度和得分推荐书籍（最多3本，按优先级排序）
+        function getBookRecommendations(scores) {
+            var bookList = [];
             
-            // 理想化倾向高
-            if (dimScores.idealization >= 15) {
-                recommendations.push({
-                    dimension: "理想化倾向",
-                    books: [
-                        { title: "《亲密关系》", author: "罗兰·米勒", reason: "帮助你看清爱情的真实面貌，减少过度美化" },
-                        { title: "《爱的艺术》", author: "埃里希·弗洛姆", reason: "区分真正的爱和理想化的投射" }
-                    ]
-                });
+            // 定义所有可能的推荐书籍
+            var bookOptions = [
+                {
+                    dim: "idealization",
+                    score: scores.idealization,
+                    threshold: 15,
+                    title: "《亲密关系》",
+                    author: "罗兰·米勒",
+                    reason: "帮助你看清爱情的真实面貌，减少过度美化",
+                    dimName: "理想化倾向"
+                },
+                {
+                    dim: "anxiety",
+                    score: scores.anxiety,
+                    threshold: 15,
+                    title: "《依恋与成人爱情》",
+                    author: "莱文&海勒",
+                    reason: "理解你的依恋风格，学会建立安全感",
+                    dimName: "依恋焦虑"
+                },
+                {
+                    dim: "boundary",
+                    score: scores.boundary,
+                    threshold: 15,
+                    title: "《界限》",
+                    author: "内德拉·格洛弗·塔瓦布",
+                    reason: "学会说不，建立健康的自我边界",
+                    dimName: "边界模糊"
+                },
+                {
+                    dim: "overgiving",
+                    score: scores.overgiving,
+                    threshold: 15,
+                    title: "《爱得太多的女人》",
+                    author: "罗宾·诺伍德",
+                    reason: "经典著作，专门针对过度付出型",
+                    dimName: "过度付出"
+                },
+                {
+                    dim: "separation",
+                    score: scores.separation,
+                    threshold: 15,
+                    title: "《也许你该找个人聊聊》",
+                    author: "洛莉·戈特利布",
+                    reason: "学会面对失去和告别",
+                    dimName: "分离焦虑"
+                },
+                {
+                    dim: "rumination",
+                    score: scores.rumination,
+                    threshold: 15,
+                    title: "《清醒地活》",
+                    author: "迈克尔·辛格",
+                    reason: "放下执念，学会放手",
+                    dimName: "纠缠执念"
+                }
+            ];
+            
+            // 筛选需要推荐的书籍
+            for (var i = 0; i < bookOptions.length; i++) {
+                var book = bookOptions[i];
+                if (book.score >= book.threshold) {
+                    bookList.push({
+                        title: book.title,
+                        author: book.author,
+                        reason: book.reason,
+                        dimension: book.dimName,
+                        score: book.score
+                    });
+                }
             }
             
-            // 依恋焦虑高
-            if (dimScores.anxiety >= 15) {
-                recommendations.push({
-                    dimension: "依恋焦虑",
-                    books: [
-                        { title: "《依恋与成人爱情》", author: "莱文&海勒", reason: "理解你的依恋风格，学会建立安全感" },
-                        { title: "《关系的重建》", author: "阿米尔·莱文", reason: "从焦虑型依恋走向安全型" }
-                    ]
-                });
+            // 按得分从高到低排序
+            bookList.sort(function(a, b) {
+                return b.score - a.score;
+            });
+            
+            // 如果没有需要推荐的，推荐一本通用书籍
+            if (bookList.length === 0) {
+                return [{
+                    title: "《亲密关系》",
+                    author: "罗兰·米勒",
+                    reason: "经典心理学著作，帮你理解爱情的本质",
+                    dimension: "通用推荐"
+                }];
             }
             
-            // 边界模糊高
-            if (dimScores.boundary >= 15) {
-                recommendations.push({
-                    dimension: "边界模糊",
-                    books: [
-                        { title: "《界限》", author: "内德拉·格洛弗·塔瓦布", reason: "学会说不，建立健康的自我边界" },
-                        { title: "《被讨厌的勇气》", author: "岸见一郎", reason: "课题分离，区分自己和别人的事" }
-                    ]
-                });
-            }
-            
-            // 过度付出高
-            if (dimScores.overgiving >= 15) {
-                recommendations.push({
-                    dimension: "过度付出",
-                    books: [
-                        { title: "《取悦症》", author: "哈丽雅特·布莱克", reason: "摆脱讨好型人格，学会爱自己" },
-                        { title: "《爱得太多的女人》", author: "罗宾·诺伍德", reason: "经典著作，专门针对过度付出型" }
-                    ]
-                });
-            }
-            
-            // 分离焦虑高
-            if (dimScores.separation >= 15) {
-                recommendations.push({
-                    dimension: "分离焦虑",
-                    books: [
-                        { title: "《也许你该找个人聊聊》", author: "洛莉·戈特利布", reason: "学会面对失去和告别" },
-                        { title: "《独处的力量》", author: "安东尼·斯托尔", reason: "发现独处的美好和价值" }
-                    ]
-                });
-            }
-            
-            // 纠缠执念高
-            if (dimScores.rumination >= 15) {
-                recommendations.push({
-                    dimension: "纠缠执念",
-                    books: [
-                        { title: "《清醒地活》", author: "迈克尔·辛格", reason: "放下执念，学会放手" },
-                        { title: "《心的重建》", author: "露易丝·海", reason: "走出失恋，重建自我" }
-                    ]
-                });
-            }
-            
-            return recommendations;
+            // 只取前3本
+            return bookList.slice(0, 3);
         }
         
         function renderDeepAnalysis(scores) {
-            const container = document.getElementById('deepAnalysis');
-            const dimOrder = ['idealization', 'anxiety', 'boundary', 'overgiving', 'separation', 'rumination'];
+            var container = document.getElementById('deepAnalysis');
+            var dimOrder = ['idealization', 'anxiety', 'boundary', 'overgiving', 'separation', 'rumination'];
             
-            let html = '<h3 style="margin: 20px 0 12px;">📖 维度深度分析</h3>';
+            var html = '<h3 style="margin: 20px 0 12px;">📖 维度深度分析</h3>';
             
-            for (let dim of dimOrder) {
-                const score = scores[dim];
-                const data = dimensions[dim];
-                const isLow = score < 13;
-                const statusClass = isLow ? 'highlight' : 'lowlight';
-                const statusText = isLow ? '✨ 健康水平' : '⚠️ 关注区域';
-                const desc = isLow ? data.lowDesc : data.highDesc;
-                const advice = isLow ? data.lowAdvice : data.highAdvice;
+            for (var d = 0; d < dimOrder.length; d++) {
+                var dim = dimOrder[d];
+                var score = scores[dim];
+                var data = dimensions[dim];
+                var isLow = score < 13;
+                var statusClass = isLow ? 'highlight' : 'lowlight';
+                var statusText = isLow ? '✨ 健康水平' : '⚠️ 关注区域';
+                var desc = isLow ? data.lowDesc : data.highDesc;
+                var advice = isLow ? data.lowAdvice : data.highAdvice;
                 
                 html += `
                     <div class="dimension-deep ${statusClass}">
@@ -315,85 +339,81 @@
                 `;
             }
             
-            // 添加书籍推荐专区
-            const bookRecs = getBookRecommendations(scores);
+            // 添加书籍推荐专区（最多3本）
+            var bookRecs = getBookRecommendations(scores);
             if (bookRecs.length > 0) {
-                html += '<h3 style="margin: 30px 0 12px;">📚 专属书单推荐</h3>';
-                for (let rec of bookRecs) {
-                    html += `<div style="margin-bottom: 16px;"><strong style="color: #c94f4f;">📌 ${rec.dimension} 推荐阅读：</strong><br>`;
-                    for (let book of rec.books) {
-                        html += `
-                            <div class="book-recommend">
-                                <div class="book-title">《${book.title}》${book.author ? ' - ' + book.author : ''}</div>
-                                <div style="font-size: 12px; color: #7e8c9e; margin-top: 4px;">💡 ${book.reason}</div>
-                            </div>
-                        `;
-                    }
-                    html += `</div>`;
+                html += '<h3 style="margin: 30px 0 12px;">📚 你的专属书单</h3>';
+                html += '<div style="margin-bottom: 8px; color: #7e8c9e;">根据你的评估结果，推荐以下书籍：</div>';
+                for (var i = 0; i < bookRecs.length; i++) {
+                    var book = bookRecs[i];
+                    html += `
+                        <div class="book-recommend">
+                            <div class="book-title">📖 ${book.title}${book.author ? ' - ' + book.author : ''}</div>
+                            <div style="font-size: 13px; color: #5a6f86; margin-top: 8px;">💡 ${book.reason}</div>
+                        </div>
+                    `;
                 }
-            } else {
-                html += `
-                    <div class="book-recommend" style="margin-top: 20px;">
-                        <div class="book-title">📖 通用推荐</div>
-                        <div style="font-size: 13px;">你的恋爱认知模式整体健康！推荐阅读《亲密关系》加深理解，或分享给需要的朋友～</div>
-                    </div>
-                `;
             }
             
             container.innerHTML = html;
         }
         
         function renderRadarChart(scores) {
-            const canvas = document.getElementById('radarChart');
+            var canvas = document.getElementById('radarChart');
             if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const values = [
+            var ctx = canvas.getContext('2d');
+            var values = [
                 scores.idealization, scores.anxiety, scores.boundary,
                 scores.overgiving, scores.separation, scores.rumination
             ];
-            const labels = ['理想化', '依恋焦虑', '边界感', '过度付出', '分离焦虑', '执念'];
+            var labels = ['理想化', '依恋焦虑', '边界感', '过度付出', '分离焦虑', '执念'];
             
-            const width = canvas.width = canvas.offsetWidth || 500;
-            const height = canvas.height = 300;
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const radius = Math.min(width, height) * 0.35;
-            const angles = labels.map((_, i) => (i * 2 * Math.PI / labels.length) - Math.PI / 2);
+            var width = canvas.width = canvas.offsetWidth || 500;
+            var height = canvas.height = 300;
+            var centerX = width / 2;
+            var centerY = height / 2;
+            var radius = Math.min(width, height) * 0.35;
+            var angles = [];
+            for (var i = 0; i < labels.length; i++) {
+                angles.push((i * 2 * Math.PI / labels.length) - Math.PI / 2);
+            }
             
             ctx.clearRect(0, 0, width, height);
             
-            for (let level = 1; level <= 5; level++) {
+            for (var level = 1; level <= 5; level++) {
                 ctx.beginPath();
-                const r = radius * (level / 5);
-                angles.forEach((angle, i) => {
-                    const x = centerX + r * Math.cos(angle);
-                    const y = centerY + r * Math.sin(angle);
-                    if (i === 0) ctx.moveTo(x, y);
+                var r = radius * (level / 5);
+                for (var a = 0; a < angles.length; a++) {
+                    var angle = angles[a];
+                    var x = centerX + r * Math.cos(angle);
+                    var y = centerY + r * Math.sin(angle);
+                    if (a === 0) ctx.moveTo(x, y);
                     else ctx.lineTo(x, y);
-                });
+                }
                 ctx.closePath();
                 ctx.strokeStyle = '#f0d4d4';
                 ctx.stroke();
             }
             
-            angles.forEach(angle => {
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
+            for (var a = 0; a < angles.length; a++) {
+                var angle = angles[a];
+                var x = centerX + radius * Math.cos(angle);
+                var y = centerY + radius * Math.sin(angle);
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
                 ctx.lineTo(x, y);
                 ctx.strokeStyle = '#f0d4d4';
                 ctx.stroke();
-            });
+            }
             
             ctx.beginPath();
-            values.forEach((value, i) => {
-                const r = radius * (value / 25);
-                const x = centerX + r * Math.cos(angles[i]);
-                const y = centerY + r * Math.sin(angles[i]);
-                if (i === 0) ctx.moveTo(x, y);
+            for (var v = 0; v < values.length; v++) {
+                var r = radius * (values[v] / 25);
+                var x = centerX + r * Math.cos(angles[v]);
+                var y = centerY + r * Math.sin(angles[v]);
+                if (v === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
-            });
+            }
             ctx.closePath();
             ctx.fillStyle = 'rgba(201, 79, 79, 0.2)';
             ctx.fill();
@@ -403,26 +423,30 @@
             
             ctx.fillStyle = '#c94f4f';
             ctx.font = '12px sans-serif';
-            angles.forEach((angle, i) => {
-                const x = centerX + (radius + 20) * Math.cos(angle);
-                const y = centerY + (radius + 20) * Math.sin(angle);
-                ctx.fillText(labels[i], x - 20, y);
-            });
+            for (var a = 0; a < angles.length; a++) {
+                var angle = angles[a];
+                var x = centerX + (radius + 20) * Math.cos(angle);
+                var y = centerY + (radius + 20) * Math.sin(angle);
+                ctx.fillText(labels[a], x - 20, y);
+            }
         }
         
         function renderResult() {
-            const answers = JSON.parse(localStorage.getItem('lovebrain_answers'));
-            const actualAge = JSON.parse(localStorage.getItem('lovebrain_age'));
+            var answers = JSON.parse(localStorage.getItem('lovebrain_answers'));
+            var actualAge = JSON.parse(localStorage.getItem('lovebrain_age'));
             
             if (!answers || !actualAge) {
                 window.location.href = 'index.html';
                 return;
             }
             
-            const dimScores = calculateScores(answers);
-            const totalRaw = answers.reduce((s, a) => s + (a || 0), 0);
-            const totalScore = totalRaw;
-            const resultType = getResultType(totalScore);
+            var dimScores = calculateScores(answers);
+            var totalRaw = 0;
+            for (var i = 0; i < answers.length; i++) {
+                if (answers[i]) totalRaw += answers[i];
+            }
+            var totalScore = totalRaw;
+            var resultType = getResultType(totalScore);
             
             document.getElementById('totalScore').textContent = totalScore;
             document.getElementById('resultBadge').innerHTML = resultType.type + ' · ' + resultType.tag;
@@ -431,8 +455,8 @@
             renderDeepAnalysis(dimScores);
             renderRadarChart(dimScores);
             
-            document.getElementById('shareBtn').onclick = () => {
-                const shareText = `我的恋爱认知模式评估结果：${resultType.type}（${totalScore}/150），已获得专属成长方案和书单。`;
+            document.getElementById('shareBtn').onclick = function() {
+                var shareText = '我的恋爱认知模式评估结果：' + resultType.type + '（' + totalScore + '/150），已获得专属成长方案和书单。';
                 if (navigator.share) {
                     navigator.share({ title: '恋爱认知模式评估', text: shareText, url: window.location.href });
                 } else {
@@ -440,23 +464,23 @@
                 }
             };
             
-            document.getElementById('copyBtn').onclick = () => {
-                const wechatId = document.getElementById('wechatId').innerText;
-                navigator.clipboard.writeText(wechatId).then(() => {
+            document.getElementById('copyBtn').onclick = function() {
+                var wechatId = document.getElementById('wechatId').innerText;
+                navigator.clipboard.writeText(wechatId).then(function() {
                     alert('微信号已复制，请打开微信添加好友，备注"恋爱评估"');
                 });
             };
             
-            const saveBtn = document.getElementById('saveImgBtn');
+            var saveBtn = document.getElementById('saveImgBtn');
             if (saveBtn) {
                 saveBtn.onclick = function() {
-                    const element = document.getElementById('reportCard');
-                    const btn = this;
-                    const originalText = btn.innerText;
+                    var element = document.getElementById('reportCard');
+                    var btn = this;
+                    var originalText = btn.innerText;
                     btn.innerText = '生成中...';
                     btn.disabled = true;
                     
-                    const originalDisplay = saveBtn.style.display;
+                    var originalDisplay = saveBtn.style.display;
                     saveBtn.style.display = 'none';
                     
                     html2canvas(element, {
@@ -464,15 +488,15 @@
                         backgroundColor: '#ffffff',
                         logging: false,
                         useCORS: true
-                    }).then(canvas => {
+                    }).then(function(canvas) {
                         saveBtn.style.display = originalDisplay;
-                        const link = document.createElement('a');
+                        var link = document.createElement('a');
                         link.download = '恋爱认知评估报告.png';
                         link.href = canvas.toDataURL('image/png');
                         link.click();
                         btn.innerText = originalText;
                         btn.disabled = false;
-                    }).catch(error => {
+                    }).catch(function(error) {
                         console.error('截图失败:', error);
                         saveBtn.style.display = originalDisplay;
                         btn.innerText = originalText;
