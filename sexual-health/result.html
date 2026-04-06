@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>性健康认知评估 - 报告</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="data.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e8d5f5 100%);
+        }
+        .dimension-deep {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin: 16px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid #e0d4e8;
+        }
+        .dimension-deep.highlight {
+            border-left: 4px solid #6c8bb3;
+            background: linear-gradient(135deg, #fff 0%, #fafcff 100%);
+        }
+        .dimension-deep.lowlight {
+            border-left: 4px solid #8b5e9e;
+            background: linear-gradient(135deg, #fff 0%, #fef8ff 100%);
+        }
+        .dimension-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #8b5e9e;
+        }
+        .dimension-score {
+            font-size: 14px;
+            background: #f3e8ff;
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: #8b5e9e;
+        }
+        .psycho-tip {
+            background: #fef8ff;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin: 12px 0;
+            font-size: 13px;
+            color: #5a6f86;
+            border-left: 3px solid #8b5e9e;
+        }
+        .action-list {
+            margin: 12px 0 0 20px;
+        }
+        .action-list li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .book-recommend {
+            background: linear-gradient(135deg, #fef8ff, #f3e8ff);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border-left: 3px solid #ffb347;
+        }
+        .book-title {
+            font-weight: 600;
+            color: #8b5e9e;
+        }
+        .result-badge {
+            background: linear-gradient(135deg, #8b5e9e, #6c4a7a);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            display: inline-block;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .wechat-simple {
+            text-align: center;
+            padding: 20px;
+            background: #fef8ff;
+            border-radius: 24px;
+            margin: 20px 0;
+        }
+        .wechat-id-box {
+            background: white;
+            border-radius: 48px;
+            padding: 12px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            border: 1px solid #e0d4e8;
+        }
+        .copy-btn-sm {
+            background: #8b5e9e;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #8b5e9e;
+            color: #8b5e9e;
+        }
+        .btn-outline:hover {
+            background: #fef8ff;
+        }
+        .disclaimer {
+            margin-top: 24px;
+            font-size: 11px;
+            color: #9aaebf;
+            text-align: center;
+            padding: 16px;
+            background: #fef8ff;
+            border-radius: 16px;
+        }
+        @media (max-width: 480px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" id="reportCard">
+            <div class="result-header">
+                <div class="logo" style="font-size: 48px;">🌸🔬</div>
+                <h1 style="color: #8b5e9e;">性健康认知评估</h1>
+                <p class="subtitle">SHCA · 基于心理学理论编制</p>
+                <div class="result-badge" id="resultBadge">—</div>
+                <div class="psycho-age">
+                    <span id="totalScore">—</span><small>/125</small>
+                </div>
+                <p id="typeDesc" style="margin-top: 12px; color: #5a6f86;"></p>
+            </div>
+            
+            <div class="radar-container">
+                <canvas id="radarChart" width="500" height="300" style="width: 100%; height: auto;"></canvas>
+            </div>
+            
+            <div id="deepAnalysis"></div>
+            
+            <div class="wechat-simple">
+                <div style="font-size: 32px;">💬</div>
+                <h3 style="margin: 8px 0;">加入「自我成长交流群」</h3>
+                <p style="font-size: 14px; color: #7e8c9e; margin-bottom: 16px;">
+                    与同频伙伴一起成长，分享觉察与进步
+                </p>
+                <div class="wechat-id-box">
+                    <span>📱 微信号：</span>
+                    <strong id="wechatId" style="color: #8b5e9e; font-size: 18px;">psyche_helper</strong>
+                    <button id="copyBtn" class="copy-btn-sm">复制</button>
+                </div>
+                <p style="font-size: 12px; color: #9aaebf;">
+                    添加时备注"性健康评估"，拉你入群
+                </p>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="saveImgBtn" class="btn btn-outline">📸 保存报告图</button>
+                <button id="shareBtn" class="btn btn-outline">📤 分享结果</button>
+                <a href="index.html" class="btn btn-outline">🔄 重新评估</a>
+            </div>
+            
+            <div class="disclaimer">
+                📊 本评估基于身体觉知理论、依恋理论、性健康心理学编制，<br>
+                仅供自我探索参考，不作为临床诊断依据。<br>
+                如因相关问题感到持续痛苦，建议寻求专业心理咨询师的帮助。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateScores(answers) {
+            var scores = {
+                body: 0, expression: 0, security: 0,
+                pressure: 0, acceptance: 0
+            };
+            
+            for (var idx = 0; idx < answers.length; idx++) {
+                var answer = answers[idx];
+                if (answer === null) continue;
+                var q = questions[idx];
+                var score = answer;
+                if (q.reverse) score = 6 - answer;
+                scores[q.dimension] += score;
+            }
+            
+            return scores;
+        }
+        
+        function renderDeepAnalysis(scores) {
+            var container = document.getElementById('deepAnalysis');
+            var dimOrder = ['body', 'expression', 'security', 'pressure', 'acceptance'];
+            
+            var html = '<h3 style="margin: 20px 0 12px;">📖 维度深度分析</h3>';
+            
+            for (var d = 0; d < dimOrder.length; d++) {
+                var dim = dimOrder[d];
+                var score = scores[dim];
+                var data = dimensions[dim];
+                var isLow = score < 13;
+                var statusClass = isLow ? 'highlight' : 'lowlight';
+                var statusText = isLow ? '✨ 健康水平' : '⚠️ 关注区域';
+                var desc = isLow ? data.lowDesc : data.highDesc;
+                var advice = isLow ? data.lowAdvice : data.highAdvice;
+                
+                html += `
+                    <div class="dimension-deep ${statusClass}">
+                        <div class="dimension-title">
+                            <span>${data.name}</span>
+                            <span class="dimension-score">${score}/25 ${statusText}</span>
+                        </div>
+                        <div class="psycho-tip">
+                            💡 <strong>心理学小知识</strong><br>
+                            ${data.psychology}
+                        </div>
+                        <p style="margin: 12px 0; font-size: 14px; color: #5a6f86;">${desc}</p>
+                        <div>
+                            <strong>🎯 成长建议</strong>
+                            <ul class="action-list">
+                                <li>${advice}</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 添加书籍推荐专区
+            var bookRecs = getBookRecommendations(scores);
+            if (bookRecs.length > 0) {
+                html += '<h3 style="margin: 30px 0 12px;">📚 你的专属书单</h3>';
+                html += '<div style="margin-bottom: 8px; color: #7e8c9e;">根据你的评估结果，推荐以下书籍：</div>';
+                for (var i = 0; i < bookRecs.length; i++) {
+                    var book = bookRecs[i];
+                    html += `
+                        <div class="book-recommend">
+                            <div class="book-title">📖 ${book.title}${book.author ? ' - ' + book.author : ''}</div>
+                            <div style="font-size: 13px; color: #5a6f86; margin-top: 8px;">💡 ${book.reason}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function renderRadarChart(scores) {
+            var canvas = document.getElementById('radarChart');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var values = [
+                scores.body, scores.expression, scores.security,
+                scores.pressure, scores.acceptance
+            ];
+            var labels = ['身体觉知', '情感表达', '关系安全感', '社会压力', '自我接纳'];
+            
+            var width = canvas.width = canvas.offsetWidth || 500;
+            var height = canvas.height = 300;
+            var centerX = width / 2;
+            var centerY = height / 2;
+            var radius = Math.min(width, height) * 0.35;
+            var angles = [];
+            for (var i = 0; i < labels.length; i++) {
+                angles.push((i * 2 * Math.PI / labels.length) - Math.PI / 2);
+            }
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            for (var level = 1; level <= 5; level++) {
+                ctx.beginPath();
+                var r = radius * (level / 5);
+                for (var a = 0; a < angles.length; a++) {
+                    var angle = angles[a];
+                    var x = centerX + r * Math.cos(angle);
+                    var y = centerY + r * Math.sin(angle);
+                    if (a === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = '#e0d4e8';
+                ctx.stroke();
+            }
+            
+            for (var a = 0; a < angles.length; a++) {
+                var angle = angles[a];
+                var x = centerX + radius * Math.cos(angle);
+                var y = centerY + radius * Math.sin(angle);
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = '#e0d4e8';
+                ctx.stroke();
+            }
+            
+            ctx.beginPath();
+            for (var v = 0; v < values.length; v++) {
+                var r = radius * (values[v] / 25);
+                var x = centerX + r * Math.cos(angles[v]);
+                var y = centerY + r * Math.sin(angles[v]);
+                if (v === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(139, 94, 158, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#8b5e9e';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#8b5e9e';
+            ctx.font = '12px sans-serif';
+            for (var a = 0; a < angles.length; a++) {
+                var angle = angles[a];
+                var x = centerX + (radius + 20) * Math.cos(angle);
+                var y = centerY + (radius + 20) * Math.sin(angle);
+                ctx.fillText(labels[a], x - 20, y);
+            }
+        }
+        
+        function renderResult() {
+            var answers = JSON.parse(localStorage.getItem('sexual_answers'));
+            var actualAge = JSON.parse(localStorage.getItem('sexual_age'));
+            
+            if (!answers || !actualAge) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            var dimScores = calculateScores(answers);
+            var totalRaw = 0;
+            for (var i = 0; i < answers.length; i++) {
+                if (answers[i]) totalRaw += answers[i];
+            }
+            var totalScore = totalRaw;
+            var resultType = getResultType(totalScore);
+            
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('resultBadge').innerHTML = resultType.type + ' · ' + resultType.tag;
+            document.getElementById('typeDesc').textContent = resultType.desc;
+            
+            renderDeepAnalysis(dimScores);
+            renderRadarChart(dimScores);
+            
+            document.getElementById('shareBtn').onclick = function() {
+                var shareText = '我的性健康认知评估结果：' + resultType.type + '（' + totalScore + '/125），已获得专属成长方案和书单。';
+                if (navigator.share) {
+                    navigator.share({ title: '性健康认知评估', text: shareText, url: window.location.href });
+                } else {
+                    prompt('分享链接', window.location.href);
+                }
+            };
+            
+            document.getElementById('copyBtn').onclick = function() {
+                var wechatId = document.getElementById('wechatId').innerText;
+                navigator.clipboard.writeText(wechatId).then(function() {
+                    alert('微信号已复制，请打开微信添加好友，备注"性健康评估"');
+                });
+            };
+            
+            var saveBtn = document.getElementById('saveImgBtn');
+            if (saveBtn) {
+                saveBtn.onclick = function() {
+                    var element = document.getElementById('reportCard');
+                    var btn = this;
+                    var originalText = btn.innerText;
+                    btn.innerText = '生成中...';
+                    btn.disabled = true;
+                    
+                    var originalDisplay = saveBtn.style.display;
+                    saveBtn.style.display = 'none';
+                    
+                    html2canvas(element, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: true
+                    }).then(function(canvas) {
+                        saveBtn.style.display = originalDisplay;
+                        var link = document.createElement('a');
+                        link.download = '性健康认知评估报告.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }).catch(function(error) {
+                        console.error('截图失败:', error);
+                        saveBtn.style.display = originalDisplay;
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        alert('保存失败，请重试');
+                    });
+                };
+            }
+        }
+        
+        renderResult();
+    </script>
+</body>
+</html>

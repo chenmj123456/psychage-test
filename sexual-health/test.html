@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>性健康认知评估 - 进行中</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e8d5f5 100%);
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #8b5e9e, #6c4a7a);
+        }
+        .option.selected {
+            background: linear-gradient(135deg, #f3e8ff, #e8d5f5);
+            border-color: #8b5e9e;
+        }
+        .option-letter {
+            color: #8b5e9e;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5e9e, #6c4a7a);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #6c4a7a, #553a63);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-count" id="questionCount">1 / 25</div>
+            
+            <div class="question-text" id="questionText">加载中...</div>
+            
+            <div class="options" id="options"></div>
+            
+            <div class="nav-buttons">
+                <button id="prevBtn" class="btn btn-outline">上一题</button>
+                <button id="nextBtn" class="btn btn-primary">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userAnswers = new Array(25).fill(null);
+        let currentQuestion = 0;
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const currentAnswer = userAnswers[currentQuestion];
+            
+            document.getElementById('questionCount').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            const optionsContainer = document.getElementById('options');
+            const optionLabels = ['完全不符合', '不太符合', '一般', '比较符合', '完全符合'];
+            
+            optionsContainer.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `option ${currentAnswer === i ? 'selected' : ''}`;
+                optionDiv.onclick = (function(score) {
+                    return function() { selectAnswer(score); };
+                })(i);
+                
+                optionDiv.innerHTML = `
+                    <div class="option-letter">${i}</div>
+                    <div class="option-text">${optionLabels[i-1]}</div>
+                `;
+                optionsContainer.appendChild(optionDiv);
+            }
+            
+            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '完成评估' : '下一题';
+        }
+        
+        function selectAnswer(value) {
+            userAnswers[currentQuestion] = value;
+            renderQuestion();
+        }
+        
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert('请先回答当前问题');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                localStorage.setItem('sexual_answers', JSON.stringify(userAnswers));
+                window.location.href = 'result.html';
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+        
+        const savedAnswers = localStorage.getItem('sexual_answers');
+        const savedAge = localStorage.getItem('sexual_age');
+        
+        if (savedAnswers) {
+            userAnswers = JSON.parse(savedAnswers);
+            for (let i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === null) {
+                    currentQuestion = i;
+                    break;
+                }
+            }
+        }
+        if (!savedAge) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        renderQuestion();
+        document.getElementById('prevBtn').onclick = prevQuestion;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+    </script>
+</body>
+</html>
