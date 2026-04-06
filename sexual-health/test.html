@@ -4,27 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>性健康认知评估 - 进行中</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="data.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, #f3e8ff 0%, #e8d5f5 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            padding: 32px 28px;
+            margin: 16px 0;
+        }
+        .progress-bar {
+            background: #eef2f7;
+            border-radius: 20px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
         }
         .progress-fill {
             background: linear-gradient(90deg, #8b5e9e, #6c4a7a);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        .question-count {
+            font-size: 13px;
+            color: #7e8c9e;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .question-text {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 24px 0;
+            color: #2c3e4f;
+            min-height: 100px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            background: #f8fafd;
+            border: 1px solid #eef2f7;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option:hover {
+            background: #f0f4fa;
+            transform: translateX(4px);
         }
         .option.selected {
             background: linear-gradient(135deg, #f3e8ff, #e8d5f5);
             border-color: #8b5e9e;
         }
         .option-letter {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
             color: #8b5e9e;
+            margin-right: 16px;
+        }
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            color: #2c3e4f;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn {
+            display: inline-block;
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            border: none;
+            border-radius: 48px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
         .btn-primary {
             background: linear-gradient(135deg, #8b5e9e, #6c4a7a);
+            color: white;
         }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #6c4a7a, #553a63);
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d0d8e3;
+            color: #4a627a;
         }
     </style>
 </head>
@@ -48,86 +145,128 @@
     </div>
 
     <script>
-        let userAnswers = new Array(25).fill(null);
-        let currentQuestion = 0;
+        // 25道题库
+        var questionsList = [
+            "我很少关注自己身体的感觉和需求",
+            "我对自己的身体感到陌生或不自在",
+            "我能够清晰地感知自己是否想要亲密接触",
+            "我会刻意回避思考与性有关的事",
+            "当我产生性感受时，我能自然地接纳它",
+            "我很难开口告诉伴侣我想要什么",
+            "我害怕表达性需求会被拒绝或嘲笑",
+            "我能和伴侣坦诚讨论亲密关系中的感受",
+            "我会因为羞耻而压抑自己的真实想法",
+            "我觉得说出来比憋在心里更好",
+            "我担心伴侣会评判我的身体或表现",
+            "在亲密关系中，我感到放松和被接纳",
+            "我害怕被拒绝，所以不敢主动",
+            "我觉得伴侣是值得信任的",
+            "我会因为过去的负面经历而对亲密关系感到恐惧",
+            "我觉得谈论性是不礼貌或羞耻的",
+            "我受传统文化影响，认为性不该被讨论",
+            "我认为性是私密的，这让我感到压抑",
+            "我能坦然接受自己是一个有性需求的人",
+            "社会对性的看法影响了我对自己的接纳",
+            "我因为自己的性欲望而感到内疚",
+            "我接纳自己所有的感受，包括性感受",
+            "我觉得自己不正常",
+            "我希望自己能更自由地表达性",
+            "我对自己在亲密关系中的表现感到满意"
+        ];
         
-        function renderQuestion() {
-            const q = questions[currentQuestion];
-            const currentAnswer = userAnswers[currentQuestion];
+        var optionLabels = ['完全不符合', '不太符合', '一般', '比较符合', '完全符合'];
+        var userAnswers = new Array(25).fill(null);
+        var currentIndex = 0;
+        
+        function renderCurrentQuestion() {
+            var questionText = questionsList[currentIndex];
+            var currentAnswer = userAnswers[currentIndex];
             
-            document.getElementById('questionCount').textContent = `${currentQuestion + 1} / ${questions.length}`;
-            document.getElementById('questionText').textContent = q.text;
-            document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            document.getElementById('questionCount').innerHTML = (currentIndex + 1) + ' / ' + questionsList.length;
+            document.getElementById('questionText').innerHTML = questionText;
+            var percent = ((currentIndex + 1) / questionsList.length) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
             
-            const optionsContainer = document.getElementById('options');
-            const optionLabels = ['完全不符合', '不太符合', '一般', '比较符合', '完全符合'];
-            
+            var optionsContainer = document.getElementById('options');
             optionsContainer.innerHTML = '';
-            for (let i = 1; i <= 5; i++) {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = `option ${currentAnswer === i ? 'selected' : ''}`;
+            
+            for (var i = 1; i <= 5; i++) {
+                var optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                if (currentAnswer === i) {
+                    optionDiv.className = 'option selected';
+                }
+                
                 optionDiv.onclick = (function(score) {
                     return function() { selectAnswer(score); };
                 })(i);
                 
-                optionDiv.innerHTML = `
-                    <div class="option-letter">${i}</div>
-                    <div class="option-text">${optionLabels[i-1]}</div>
-                `;
+                optionDiv.innerHTML = '<div class="option-letter">' + i + '</div><div class="option-text">' + optionLabels[i-1] + '</div>';
                 optionsContainer.appendChild(optionDiv);
             }
             
-            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
-            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '完成评估' : '下一题';
+            var prevBtn = document.getElementById('prevBtn');
+            if (currentIndex === 0) {
+                prevBtn.style.visibility = 'hidden';
+            } else {
+                prevBtn.style.visibility = 'visible';
+            }
+            
+            var nextBtn = document.getElementById('nextBtn');
+            if (currentIndex === questionsList.length - 1) {
+                nextBtn.innerHTML = '完成评估';
+            } else {
+                nextBtn.innerHTML = '下一题';
+            }
         }
         
         function selectAnswer(value) {
-            userAnswers[currentQuestion] = value;
-            renderQuestion();
+            userAnswers[currentIndex] = value;
+            renderCurrentQuestion();
         }
         
-        function nextQuestion() {
-            if (userAnswers[currentQuestion] === null) {
+        function goNext() {
+            if (userAnswers[currentIndex] === null) {
                 alert('请先回答当前问题');
                 return;
             }
             
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                renderQuestion();
+            if (currentIndex < questionsList.length - 1) {
+                currentIndex = currentIndex + 1;
+                renderCurrentQuestion();
             } else {
                 localStorage.setItem('sexual_answers', JSON.stringify(userAnswers));
                 window.location.href = 'result.html';
             }
         }
         
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                renderQuestion();
+        function goPrev() {
+            if (currentIndex > 0) {
+                currentIndex = currentIndex - 1;
+                renderCurrentQuestion();
             }
         }
         
-        const savedAnswers = localStorage.getItem('sexual_answers');
-        const savedAge = localStorage.getItem('sexual_age');
+        var savedAnswers = localStorage.getItem('sexual_answers');
+        var savedAge = localStorage.getItem('sexual_age');
         
         if (savedAnswers) {
             userAnswers = JSON.parse(savedAnswers);
-            for (let i = 0; i < userAnswers.length; i++) {
+            for (var i = 0; i < userAnswers.length; i++) {
                 if (userAnswers[i] === null) {
-                    currentQuestion = i;
+                    currentIndex = i;
                     break;
                 }
             }
         }
+        
         if (!savedAge) {
             window.location.href = 'index.html';
-            return;
+        } else {
+            renderCurrentQuestion();
+            document.getElementById('prevBtn').onclick = goPrev;
+            document.getElementById('nextBtn').onclick = goNext;
         }
-        
-        renderQuestion();
-        document.getElementById('prevBtn').onclick = prevQuestion;
-        document.getElementById('nextBtn').onclick = nextQuestion;
     </script>
 </body>
 </html>
