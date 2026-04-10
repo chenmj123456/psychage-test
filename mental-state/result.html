@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>精神状态评估 - 诊断报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="data.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #7B2CBF 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: #FFF7ED;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 32px 28px;
+            margin: 16px 0;
+        }
+        .result-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #7e8c9e;
+            margin-top: 4px;
+        }
+        .personality-badge {
+            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            display: inline-block;
+            margin: 16px 0 8px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .personality-tag {
+            font-size: 14px;
+            color: #FF6B35;
+            background: #FFF0E6;
+            padding: 4px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+        .slogan {
+            font-size: 18px;
+            font-weight: 600;
+            color: #7B2CBF;
+            margin: 16px 0;
+            padding: 12px;
+            background: #F3E8FF;
+            border-radius: 24px;
+        }
+        .desc-box {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin: 16px 0;
+            border: 2px solid #FFD1B3;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #2c3e4f;
+        }
+        .radar-container {
+            margin: 24px 0;
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            border: 2px solid #FFD1B3;
+        }
+        .dimension-item {
+            margin: 12px 0;
+        }
+        .dimension-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2c3e4f;
+        }
+        .dimension-bar {
+            background: #FFD1B3;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .dimension-fill {
+            background: linear-gradient(90deg, #FF6B35, #7B2CBF);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+        }
+        .wechat-box {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFF0E6, #F3E8FF);
+            border-radius: 32px;
+            margin: 20px 0;
+        }
+        .wechat-id-box {
+            background: white;
+            border-radius: 60px;
+            padding: 12px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            border: 2px solid #FFD1B3;
+        }
+        .copy-btn {
+            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #FF6B35;
+            color: #FF6B35;
+        }
+        .btn-outline:hover {
+            background: #FFF0E6;
+        }
+        .disclaimer {
+            margin-top: 24px;
+            font-size: 10px;
+            color: #9aaebf;
+            text-align: center;
+        }
+        @media (max-width: 480px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" id="reportCard">
+            <div class="result-header">
+                <div class="logo">🧠✨</div>
+                <h1>精神状态诊断报告</h1>
+                <p class="subtitle">你的精神状态评估结果</p>
+                <div class="personality-badge" id="personalityName">—</div>
+                <div class="personality-tag" id="personalityTag">—</div>
+                <div class="slogan" id="slogan">—</div>
+            </div>
+            
+            <div class="desc-box" id="descBox">
+                — 加载中 —
+            </div>
+            
+            <div class="radar-container">
+                <div class="dimension-item">
+                    <div class="dimension-label"><span>🧠 清醒度</span><span id="awakeScore">0/5</span></div>
+                    <div class="dimension-bar"><div class="dimension-fill" id="awakeFill" style="width:0%"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="dimension-label"><span>😴 摆烂度</span><span id="slackScore">0/5</span></div>
+                    <div class="dimension-bar"><div class="dimension-fill" id="slackFill" style="width:0%"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="dimension-label"><span>👥 社交欲</span><span id="socialScore">0/5</span></div>
+                    <div class="dimension-bar"><div class="dimension-fill" id="socialFill" style="width:0%"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="dimension-label"><span>🎭 情绪化</span><span id="emotionalScore">0/5</span></div>
+                    <div class="dimension-bar"><div class="dimension-fill" id="emotionalFill" style="width:0%"></div></div>
+                </div>
+                <div class="dimension-item">
+                    <div class="dimension-label"><span>🎮 掌控欲</span><span id="controlScore">0/5</span></div>
+                    <div class="dimension-bar"><div class="dimension-fill" id="controlFill" style="width:0%"></div></div>
+                </div>
+            </div>
+            
+            <div class="wechat-box">
+                <div style="font-size: 32px;">💬</div>
+                <h3 style="margin: 8px 0; color: #FF6B35;">加入「精神状态交流群」</h3>
+                <p style="font-size: 14px; color: #7e8c9e; margin-bottom: 16px;">
+                    和同款精神状态的小伙伴一起玩耍
+                </p>
+                <div class="wechat-id-box">
+                    <span>📱 微信号：</span>
+                    <strong id="wechatId" style="color: #FF6B35;">psyche_helper</strong>
+                    <button id="copyBtn" class="copy-btn">复制</button>
+                </div>
+                <p style="font-size: 12px; color: #9aaebf;">
+                    添加时备注"精神状态"，拉你入群
+                </p>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="saveImgBtn" class="btn btn-outline">📸 保存报告</button>
+                <button id="shareBtn" class="btn btn-outline">📤 分享结果</button>
+                <a href="index.html" class="btn btn-outline">🔄 重新测试</a>
+            </div>
+            
+            <div class="disclaimer">
+                🎭 仅供娱乐，请勿较真。你的精神状态由你定义~
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateScoresFromAnswers(answers) {
+            var scores = { awake: 0, slack: 0, social: 0, emotional: 0, control: 0 };
+            var counts = { awake: 0, slack: 0, social: 0, emotional: 0, control: 0 };
+            
+            for (var i = 0; i < answers.length; i++) {
+                var answer = answers[i];
+                if (answer === null) continue;
+                var mapping = dimensionMapping[i];
+                var score = answer;
+                if (mapping.reverse) score = 6 - answer;
+                scores[mapping.dim] += score;
+                counts[mapping.dim]++;
+            }
+            
+            for (var dim in scores) {
+                if (counts[dim] > 0) {
+                    scores[dim] = Math.round((scores[dim] / (counts[dim] * 5)) * 5);
+                } else {
+                    scores[dim] = 3;
+                }
+            }
+            return scores;
+        }
+        
+        function renderResult() {
+            var answers = JSON.parse(localStorage.getItem('mental_answers'));
+            var actualAge = JSON.parse(localStorage.getItem('mental_age'));
+            
+            if (!answers || !actualAge) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            var dimScores = calculateScoresFromAnswers(answers);
+            var personality = getPersonality(dimScores);
+            var totalRaw = 0;
+            for (var i = 0; i < answers.length; i++) {
+                if (answers[i]) totalRaw += answers[i];
+            }
+            var status = getResultType(totalRaw);
+            
+            document.getElementById('personalityName').innerHTML = personality.name;
+            document.getElementById('personalityTag').innerHTML = personality.tag;
+            document.getElementById('slogan').innerHTML = '“' + personality.slogan + '”';
+            document.getElementById('descBox').innerHTML = personality.desc;
+            
+            document.getElementById('awakeScore').innerHTML = dimScores.awake + '/5';
+            document.getElementById('slackScore').innerHTML = dimScores.slack + '/5';
+            document.getElementById('socialScore').innerHTML = dimScores.social + '/5';
+            document.getElementById('emotionalScore').innerHTML = dimScores.emotional + '/5';
+            document.getElementById('controlScore').innerHTML = dimScores.control + '/5';
+            
+            document.getElementById('awakeFill').style.width = (dimScores.awake / 5 * 100) + '%';
+            document.getElementById('slackFill').style.width = (dimScores.slack / 5 * 100) + '%';
+            document.getElementById('socialFill').style.width = (dimScores.social / 5 * 100) + '%';
+            document.getElementById('emotionalFill').style.width = (dimScores.emotional / 5 * 100) + '%';
+            document.getElementById('controlFill').style.width = (dimScores.control / 5 * 100) + '%';
+            
+            document.getElementById('shareBtn').onclick = function() {
+                var shareText = '我的精神状态诊断结果：' + personality.name + '（' + personality.slogan + '）快来测测你的精神状态！';
+                if (navigator.share) {
+                    navigator.share({ title: '精神状态评估', text: shareText, url: window.location.href });
+                } else {
+                    prompt('分享链接', window.location.href);
+                }
+            };
+            
+            document.getElementById('copyBtn').onclick = function() {
+                var wechatId = document.getElementById('wechatId').innerText;
+                navigator.clipboard.writeText(wechatId).then(function() {
+                    alert('微信号已复制，添加时备注"精神状态"~');
+                });
+            };
+            
+            var saveBtn = document.getElementById('saveImgBtn');
+            if (saveBtn) {
+                saveBtn.onclick = function() {
+                    var element = document.getElementById('reportCard');
+                    var btn = this;
+                    var originalText = btn.innerText;
+                    btn.innerText = '生成中...';
+                    btn.disabled = true;
+                    
+                    var originalDisplay = saveBtn.style.display;
+                    saveBtn.style.display = 'none';
+                    
+                    html2canvas(element, {
+                        scale: 2,
+                        backgroundColor: '#FFF7ED',
+                        logging: false,
+                        useCORS: true
+                    }).then(function(canvas) {
+                        saveBtn.style.display = originalDisplay;
+                        var link = document.createElement('a');
+                        link.download = '精神状态诊断报告.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }).catch(function(error) {
+                        console.error('截图失败:', error);
+                        saveBtn.style.display = originalDisplay;
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        alert('保存失败，请重试');
+                    });
+                };
+            }
+        }
+        
+        renderResult();
+    </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>精神状态评估 - 诊断中</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #7B2CBF 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: #FFF7ED;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 32px 28px;
+            margin: 16px 0;
+        }
+        .progress-bar {
+            background: #FFD1B3;
+            border-radius: 20px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #FF6B35, #7B2CBF);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        .question-count {
+            font-size: 13px;
+            color: #FF6B35;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 24px 0;
+            color: #2c3e4f;
+            min-height: 100px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            background: white;
+            border: 2px solid #FFD1B3;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option:hover {
+            background: #FFF0E6;
+            transform: translateX(4px);
+            border-color: #FF6B35;
+        }
+        .option.selected {
+            background: linear-gradient(135deg, #FFF0E6, #F3E8FF);
+            border-color: #FF6B35;
+        }
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            margin-right: 16px;
+        }
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            color: #2c3e4f;
+            font-weight: 500;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn {
+            display: inline-block;
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #FFD1B3;
+            color: #FF6B35;
+        }
+        .btn-outline:hover {
+            background: #FFF0E6;
+            border-color: #FF6B35;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-count" id="questionCount">1 / 25</div>
+            
+            <div class="question-text" id="questionText">加载中...</div>
+            
+            <div class="options" id="options"></div>
+            
+            <div class="nav-buttons">
+                <button id="prevBtn" class="btn btn-outline">上一题</button>
+                <button id="nextBtn" class="btn btn-primary">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 25道题库
+        var questionsList = [
+            "我做事通常有明确的目标和计划",
+            "我的情绪容易受到他人影响",
+            "我喜欢掌控局面，讨厌失控",
+            "我享受独处的时光",
+            "我会因为没达到预期而自责",
+            "我对未来感到迷茫",
+            "我能很快从负面情绪中恢复",
+            "我在社交场合会感到不自在",
+            "我会反复回想过去的尴尬瞬间",
+            "我觉得自己比大多数人更清醒",
+            "我会为了合群而改变自己",
+            "我经常觉得自己'不正常'",
+            "周末最理想的度过方式是？",
+            "朋友借钱不还，你会？",
+            "对象5小时没回消息，你会？",
+            "公司突然通知加班，你会？",
+            "看到朋友圈有人晒旅游/升职，你会？",
+            "早上闹钟响了，你会？",
+            "在电梯里遇到不熟的同事，你会？",
+            "你的桌面/房间通常是？",
+            "你觉得自己目前的精神状态是？",
+            "给你一个超能力，你选？",
+            "此题没有题目，请盲选",
+            "下班后千万别找我，你的态度是？",
+            "如果用一个emoji形容自己，你会选？"
+        ];
+        
+        var optionLabels = ['完全不符合', '不太符合', '一般', '比较符合', '完全符合'];
+        var sceneOptions = {
+            13: ['在家躺尸，谁也别叫我', '约朋友吃饭聊天', '去户外/探店/运动', '学习/加班/搞钱'],
+            14: ['直接开口要', '暗示一下', '算了，当送他了', '记在小本本上，再也不借'],
+            15: ['无所谓，我也在忙', '有点在意，但不会问', '胡思乱想，开始焦虑', '夺命连环call'],
+            16: ['接受，默默加班', '抱怨但还是去', '找理由请假', '当场辞职（在心里）'],
+            17: ['真心点赞', '无感划过', '有点羡慕', '焦虑，觉得自己不够好'],
+            18: ['立刻起床', '再躺5分钟', '按掉，再睡10分钟', '请假，今天不想上班'],
+            19: ['主动打招呼聊天', '点头微笑', '低头看手机', '希望电梯快点到'],
+            20: ['整洁有序', '乱中有序', '很乱但我知道在哪', '已经看不出来桌面了'],
+            21: ['很稳定，挺好的', '一般，偶尔emo', '不太好，经常焦虑', '已经在崩溃边缘'],
+            22: ['瞬移（不用挤地铁）', '隐身（社恐福音）', '时间停止（睡到饱）', '钞能力（简单粗暴）'],
+            23: ['随便选的', '也是随便选的', '同上', '同上'],
+            24: ['强烈同意', '同意', '看情况', '不同意'],
+            25: ['😴（困）', '🤡（小丑）', '🫠（融化）', '🥲（强颜欢笑）']
+        };
+        
+        var userAnswers = new Array(25).fill(null);
+        var currentIndex = 0;
+        
+        function renderCurrentQuestion() {
+            var qIndex = currentIndex + 1;
+            var questionText = questionsList[currentIndex];
+            var currentAnswer = userAnswers[currentIndex];
+            
+            document.getElementById('questionCount').innerHTML = currentIndex + 1 + ' / ' + questionsList.length;
+            document.getElementById('questionText').innerHTML = questionText;
+            var percent = ((currentIndex + 1) / questionsList.length) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+            
+            var optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            var labels;
+            if (sceneOptions[qIndex]) {
+                labels = sceneOptions[qIndex];
+            } else {
+                labels = optionLabels;
+            }
+            
+            for (var i = 0; i < labels.length; i++) {
+                var optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                if (currentAnswer === i + 1) {
+                    optionDiv.className = 'option selected';
+                }
+                
+                optionDiv.onclick = (function(score) {
+                    return function() { selectAnswer(score); };
+                })(i + 1);
+                
+                optionDiv.innerHTML = '<div class="option-letter">' + String.fromCharCode(65 + i) + '</div><div class="option-text">' + labels[i] + '</div>';
+                optionsContainer.appendChild(optionDiv);
+            }
+            
+            var prevBtn = document.getElementById('prevBtn');
+            if (currentIndex === 0) {
+                prevBtn.style.visibility = 'hidden';
+            } else {
+                prevBtn.style.visibility = 'visible';
+            }
+            
+            var nextBtn = document.getElementById('nextBtn');
+            if (currentIndex === questionsList.length - 1) {
+                nextBtn.innerHTML = '完成诊断 ✨';
+            } else {
+                nextBtn.innerHTML = '下一题';
+            }
+        }
+        
+        function selectAnswer(value) {
+            userAnswers[currentIndex] = value;
+            renderCurrentQuestion();
+        }
+        
+        function goNext() {
+            if (userAnswers[currentIndex] === null) {
+                alert('请先回答当前问题~');
+                return;
+            }
+            
+            if (currentIndex < questionsList.length - 1) {
+                currentIndex = currentIndex + 1;
+                renderCurrentQuestion();
+            } else {
+                localStorage.setItem('mental_answers', JSON.stringify(userAnswers));
+                window.location.href = 'result.html';
+            }
+        }
+        
+        function goPrev() {
+            if (currentIndex > 0) {
+                currentIndex = currentIndex - 1;
+                renderCurrentQuestion();
+            }
+        }
+        
+        var savedAnswers = localStorage.getItem('mental_answers');
+        var savedAge = localStorage.getItem('mental_age');
+        
+        if (savedAnswers) {
+            userAnswers = JSON.parse(savedAnswers);
+            for (var i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === null) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        if (!savedAge) {
+            window.location.href = 'index.html';
+        } else {
+            renderCurrentQuestion();
+            document.getElementById('prevBtn').onclick = goPrev;
+            document.getElementById('nextBtn').onclick = goNext;
+        }
+    </script>
+</body>
+</html>
