@@ -16,104 +16,137 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, #FF6B35 0%, #7B2CBF 100%);
             min-height: 100vh;
+            padding: 20px;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
         }
-        .card {
-            background: #FFF7ED;
+        .report-card {
+            background: #0A0A0A;
             border-radius: 48px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 32px 28px;
-            margin: 16px 0;
+            padding: 32px 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
         .result-header {
             text-align: center;
             margin-bottom: 24px;
         }
         .logo {
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 8px;
         }
-        h1 {
-            font-size: 28px;
+        .title {
+            font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            background: linear-gradient(135deg, #FF6B35, #FF2A6D);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
         .subtitle {
-            font-size: 12px;
-            color: #7e8c9e;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
             margin-top: 4px;
         }
         .personality-badge {
-            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 60px;
-            display: inline-block;
-            margin: 16px 0 8px;
-            font-size: 20px;
-            font-weight: 700;
+            margin: 20px 0 8px;
+            text-align: center;
+        }
+        .personality-name {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF6B35, #FF2A6D, #7B2CBF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
         }
         .personality-tag {
-            font-size: 14px;
-            color: #FF6B35;
-            background: #FFF0E6;
-            padding: 4px 12px;
-            border-radius: 30px;
             display: inline-block;
-            margin-bottom: 16px;
+            background: rgba(255, 107, 53, 0.2);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #FF6B35;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            margin-top: 8px;
+        }
+        .slogan-box {
+            background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(123,44,191,0.15));
+            border-radius: 32px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,107,53,0.3);
         }
         .slogan {
-            font-size: 18px;
-            font-weight: 600;
-            color: #7B2CBF;
-            margin: 16px 0;
-            padding: 12px;
-            background: #F3E8FF;
-            border-radius: 24px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #FF6B35;
+            text-align: center;
+        }
+        .slogan-sub {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            margin-top: 8px;
         }
         .desc-box {
-            background: white;
+            background: rgba(255,255,255,0.05);
             border-radius: 24px;
             padding: 20px;
             margin: 16px 0;
-            border: 2px solid #FFD1B3;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.6;
-            color: #2c3e4f;
+            color: rgba(255,255,255,0.8);
+        }
+        .character-image {
+            text-align: center;
+            margin: 16px 0;
+        }
+        .character-image img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(123,44,191,0.2));
+            padding: 10px;
+            border: 2px solid rgba(255,107,53,0.3);
         }
         .radar-container {
-            margin: 24px 0;
-            background: white;
+            background: rgba(255,255,255,0.05);
             border-radius: 24px;
-            padding: 16px;
-            border: 2px solid #FFD1B3;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .radar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 16px;
+            text-align: center;
         }
         .dimension-item {
-            margin: 12px 0;
+            margin: 16px 0;
         }
         .dimension-label {
             display: flex;
             justify-content: space-between;
             font-size: 13px;
             font-weight: 600;
-            margin-bottom: 6px;
-            color: #2c3e4f;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.8);
         }
         .dimension-bar {
-            background: #FFD1B3;
+            background: rgba(255,255,255,0.1);
             border-radius: 20px;
-            height: 8px;
+            height: 10px;
             overflow: hidden;
         }
         .dimension-fill {
-            background: linear-gradient(90deg, #FF6B35, #7B2CBF);
+            background: linear-gradient(90deg, #FF6B35, #FF2A6D);
             width: 0%;
             height: 100%;
             border-radius: 20px;
@@ -121,83 +154,101 @@
         .wechat-box {
             text-align: center;
             padding: 20px;
-            background: linear-gradient(135deg, #FFF0E6, #F3E8FF);
+            background: rgba(255,255,255,0.05);
             border-radius: 32px;
             margin: 20px 0;
         }
         .wechat-id-box {
-            background: white;
+            background: rgba(0,0,0,0.5);
             border-radius: 60px;
             padding: 12px 20px;
             display: inline-flex;
             align-items: center;
             gap: 12px;
             margin: 12px 0;
-            border: 2px solid #FFD1B3;
+            border: 1px solid rgba(255,107,53,0.3);
+        }
+        .wechat-id {
+            color: #FF6B35;
+            font-weight: 600;
         }
         .copy-btn {
-            background: linear-gradient(135deg, #FF6B35, #7B2CBF);
+            background: linear-gradient(135deg, #FF6B35, #FF2A6D);
             color: white;
             border: none;
             padding: 6px 16px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
         }
         .action-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 24px;
+            margin-top: 20px;
             flex-wrap: wrap;
         }
         .btn {
             flex: 1;
             padding: 14px 20px;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             text-align: center;
             border: none;
             border-radius: 60px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            color: white;
         }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #FF6B35;
-            color: #FF6B35;
-        }
-        .btn-outline:hover {
-            background: #FFF0E6;
+        .btn:hover {
+            background: rgba(255,107,53,0.3);
+            transform: translateY(-2px);
         }
         .disclaimer {
-            margin-top: 24px;
+            margin-top: 20px;
             font-size: 10px;
-            color: #9aaebf;
+            color: rgba(255,255,255,0.3);
             text-align: center;
         }
         @media (max-width: 480px) {
+            .personality-name {
+                font-size: 36px;
+            }
+            .slogan {
+                font-size: 16px;
+            }
             .action-buttons {
                 flex-direction: column;
             }
-            .btn {
-                width: 100%;
+            .character-image img {
+                width: 120px;
+                height: 120px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card" id="reportCard">
+        <div class="report-card" id="reportCard">
             <div class="result-header">
                 <div class="logo">🧠✨</div>
-                <h1>精神状态诊断报告</h1>
-                <p class="subtitle">你的精神状态评估结果</p>
-                <div class="personality-badge" id="personalityName">—</div>
-                <div class="personality-tag" id="personalityTag">—</div>
+                <div class="title">精神状态诊断报告</div>
+                <div class="subtitle">YOUR MENTAL STATE DIAGNOSIS</div>
+            </div>
+            
+            <div class="personality-badge">
+                <div class="personality-name" id="personalityName">—</div>
+                <div><span class="personality-tag" id="personalityTag">—</span></div>
+            </div>
+            
+            <div class="slogan-box">
                 <div class="slogan" id="slogan">—</div>
+                <div class="slogan-sub">✨ 你的精神状态一句话总结 ✨</div>
+            </div>
+            
+            <!-- 卡通形象图片 -->
+            <div class="character-image" id="characterImage">
+                <img id="personalityImg" src="" alt="人格形象">
             </div>
             
             <div class="desc-box" id="descBox">
@@ -205,6 +256,7 @@
             </div>
             
             <div class="radar-container">
+                <div class="radar-title">📊 五维精神状态雷达</div>
                 <div class="dimension-item">
                     <div class="dimension-label"><span>🧠 清醒度</span><span id="awakeScore">0/5</span></div>
                     <div class="dimension-bar"><div class="dimension-fill" id="awakeFill" style="width:0%"></div></div>
@@ -230,23 +282,23 @@
             <div class="wechat-box">
                 <div style="font-size: 32px;">💬</div>
                 <h3 style="margin: 8px 0; color: #FF6B35;">加入「精神状态交流群」</h3>
-                <p style="font-size: 14px; color: #7e8c9e; margin-bottom: 16px;">
+                <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 16px;">
                     和同款精神状态的小伙伴一起玩耍
                 </p>
                 <div class="wechat-id-box">
                     <span>📱 微信号：</span>
-                    <strong id="wechatId" style="color: #FF6B35;">chenmj1221</strong>
+                    <strong class="wechat-id" id="wechatId">psyche_helper</strong>
                     <button id="copyBtn" class="copy-btn">复制</button>
                 </div>
-                <p style="font-size: 12px; color: #9aaebf;">
+                <p style="font-size: 11px; color: rgba(255,255,255,0.4);">
                     添加时备注"精神状态"，拉你入群
                 </p>
             </div>
             
             <div class="action-buttons">
-                <button id="saveImgBtn" class="btn btn-outline">📸 保存报告</button>
-                <button id="shareBtn" class="btn btn-outline">📤 分享结果</button>
-                <a href="index.html" class="btn btn-outline">🔄 重新测试</a>
+                <button id="saveImgBtn" class="btn">📸 保存报告图</button>
+                <button id="shareBtn" class="btn">📤 分享结果</button>
+                <a href="index.html" class="btn">🔄 重新测试</a>
             </div>
             
             <div class="disclaimer">
@@ -256,6 +308,25 @@
     </div>
 
     <script>
+        // 人格对应的图片文件名
+        var personalityImages = {
+            "人间观察员": "observer.png",
+            "人间清醒": "sober.png",
+            "漂浮者": "float.png",
+            "躺平大师": "lay.png",
+            "树懒本懒": "sloth.png",
+            "佛系玩家": "zen.png",
+            "精神内耗师": "overthink.png",
+            "拖延症晚期": "procra.png",
+            "社恐重症": "social.png",
+            "卷心菜": "roll.png",
+            "搞钱人": "hustle.png",
+            "计划狂魔": "planner.png",
+            "情感绝缘体": "stone.png",
+            "恋爱脑晚期": "depend.png",
+            "边界大师": "boundary.png"
+        };
+        
         function calculateScoresFromAnswers(answers) {
             var scores = { awake: 0, slack: 0, social: 0, emotional: 0, control: 0 };
             var counts = { awake: 0, slack: 0, social: 0, emotional: 0, control: 0 };
@@ -291,16 +362,21 @@
             
             var dimScores = calculateScoresFromAnswers(answers);
             var personality = getPersonality(dimScores);
-            var totalRaw = 0;
-            for (var i = 0; i < answers.length; i++) {
-                if (answers[i]) totalRaw += answers[i];
-            }
-            var status = getResultType(totalRaw);
             
             document.getElementById('personalityName').innerHTML = personality.name;
             document.getElementById('personalityTag').innerHTML = personality.tag;
-            document.getElementById('slogan').innerHTML = '“' + personality.slogan + '”';
+            document.getElementById('slogan').innerHTML = personality.slogan;
             document.getElementById('descBox').innerHTML = personality.desc;
+            
+            // 设置卡通形象图片
+            var imgFile = personalityImages[personality.name];
+            if (imgFile) {
+                document.getElementById('personalityImg').src = 'images/' + imgFile;
+            } else {
+                // 如果没有匹配的图片，显示默认emoji
+                document.getElementById('personalityImg').style.display = 'none';
+                document.getElementById('characterImage').innerHTML = '<div style="font-size: 80px;">🎭</div>';
+            }
             
             document.getElementById('awakeScore').innerHTML = dimScores.awake + '/5';
             document.getElementById('slackScore').innerHTML = dimScores.slack + '/5';
@@ -339,16 +415,12 @@
                     btn.innerText = '生成中...';
                     btn.disabled = true;
                     
-                    var originalDisplay = saveBtn.style.display;
-                    saveBtn.style.display = 'none';
-                    
                     html2canvas(element, {
                         scale: 2,
-                        backgroundColor: '#FFF7ED',
+                        backgroundColor: '#0A0A0A',
                         logging: false,
                         useCORS: true
                     }).then(function(canvas) {
-                        saveBtn.style.display = originalDisplay;
                         var link = document.createElement('a');
                         link.download = '精神状态诊断报告.png';
                         link.href = canvas.toDataURL('image/png');
@@ -357,7 +429,6 @@
                         btn.disabled = false;
                     }).catch(function(error) {
                         console.error('截图失败:', error);
-                        saveBtn.style.display = originalDisplay;
                         btn.innerText = originalText;
                         btn.disabled = false;
                         alert('保存失败，请重试');
