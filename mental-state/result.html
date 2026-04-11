@@ -94,15 +94,6 @@
             text-align: center;
             margin-top: 8px;
         }
-        .desc-box {
-            background: rgba(255,255,255,0.05);
-            border-radius: 24px;
-            padding: 20px;
-            margin: 16px 0;
-            font-size: 14px;
-            line-height: 1.6;
-            color: rgba(255,255,255,0.8);
-        }
         .character-image {
             text-align: center;
             margin: 16px 0;
@@ -114,6 +105,31 @@
             background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(123,44,191,0.2));
             padding: 10px;
             border: 2px solid rgba(255,107,53,0.3);
+        }
+        /* 详细分析区块 */
+        .analysis-section {
+            margin: 20px 0;
+        }
+        .analysis-block {
+            background: rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .analysis-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FF6B35;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .analysis-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.75);
         }
         .radar-container {
             background: rgba(255,255,255,0.05);
@@ -246,14 +262,12 @@
                 <div class="slogan-sub">✨ 你的精神状态一句话总结 ✨</div>
             </div>
             
-            <!-- 卡通形象图片 -->
             <div class="character-image" id="characterImage">
                 <img id="personalityImg" src="" alt="人格形象">
             </div>
             
-            <div class="desc-box" id="descBox">
-                — 加载中 —
-            </div>
+            <!-- 详细人格分析 -->
+            <div class="analysis-section" id="analysisSection"></div>
             
             <div class="radar-container">
                 <div class="radar-title">📊 五维精神状态雷达</div>
@@ -308,6 +322,100 @@
     </div>
 
     <script>
+        // 人格详细分析数据
+        var personalityAnalysis = {
+            "人间观察员": {
+                daily: "你习惯站在人群之外观察世界。聚会时你是那个安静的人，不主动发言但什么都看在眼里。朋友觉得你有点神秘，其实你只是懒得参与。",
+                work: "职场上你是冷静的旁观者，不站队不内卷。你能看到问题的本质，但很少主动提出——除非被问到。老板觉得你靠谱但不够积极。",
+                relationship: "你对人际关系保持距离，不轻易交心。朋友不多但都是老友。在恋爱中你需要大量独处空间，太黏人会让你想逃。",
+                advice: "试着偶尔走出观察者的位置，表达你的想法。你的洞察力是天赋，别浪费。可以每天主动说一次自己的真实感受。"
+            },
+            "人间清醒": {
+                daily: "你是朋友圈里的'人间清醒'。朋友遇到感情问题、工作困惑都爱找你聊，因为你总能一针见血指出问题。",
+                work: "你看透职场规则但不纠结，该卷时卷，该躺时躺。你很清楚自己要什么，不会为了加班而加班。",
+                relationship: "你不容易被PUA，也不恋爱脑。你知道什么样的人适合自己，不会因为孤独而将就。",
+                advice: "你的清醒是优势，但偶尔也可以'糊涂'一点。太清醒有时候会错过一些美好的体验。"
+            },
+            "漂浮者": {
+                daily: "你像一片叶子随风飘荡，没有强烈的目标感，但也不会太焦虑。你觉得'随缘'是最好的人生态度。",
+                work: "工作中你随遇而安，不会主动争取什么，给什么做什么。领导觉得你不够有冲劲，但你也无所谓。",
+                relationship: "在关系中你是被动的一方，等着别人来靠近你。你不太会主动维系关系，'顺其自然'是你的口头禅。",
+                advice: "偶尔也可以主动一次。选一件你真正想做的事，试着主动推进，你会发现不一样的自己。"
+            },
+            "躺平大师": {
+                daily: "你的座右铭：能躺着绝不坐着。周末可以两天不出门，外卖就是你的救命恩人。",
+                work: "上班就是赚钱工具，下班才是人生。你不会为了升职加薪拼命，'够用就行'是你的职场哲学。",
+                relationship: "恋爱？太累了。社交？太累了。你更喜欢一个人待着，不用照顾任何人的情绪。",
+                advice: "躺平可以，但别躺死。每周找一件让你有动力的小事做，保持基本的生活热情。"
+            },
+            "树懒本懒": {
+                daily: "你做事慢吞吞，但有自己的节奏。别人催你你会更慢，'急什么'是你的口头禅。",
+                work: "你是慢工出细活型选手，不追求速度但质量不错。同事觉得你有点拖拉，但交给你的任务基本靠谱。",
+                relationship: "你需要一个能包容你节奏的伴侣。急性子的人会被你气死，你也受不了被催促。",
+                advice: "慢不是问题，但可以学会提前规划。重要的事情提前准备，给自己留出缓冲时间。"
+            },
+            "佛系玩家": {
+                daily: "随缘，不争不抢。朋友争得面红耳赤时，你在旁边泡茶。你觉得'都可以'是最好的答案。",
+                work: "升职加薪？随缘。被甩锅？算了。你不会主动争取什么，但也不会让别人欺负你。",
+                relationship: "恋爱随缘，单身也行。你不会刻意去找对象，相信缘分到了自然会有。",
+                advice: "佛系不是摆烂。对于真正重要的事，可以稍微主动一点，人生也需要一些'我偏要'的时刻。"
+            },
+            "精神内耗师": {
+                daily: "你的大脑是一部永动机。一句话能想三天，一个眼神能解读出十种意思。睡前还在复盘五年前的尴尬瞬间。",
+                work: "你太在意别人的看法了。老板一个皱眉，你能焦虑一整天。同事没回消息，你已经在想是不是得罪人了。",
+                relationship: "你在感情里容易患得患失。对方晚回消息，你已经在脑子里演完了一整部分手大戏。",
+                advice: "学会'关我屁事'和'关你屁事'。每天给自己设定一个'想不通就不想了'的时间点。"
+            },
+            "拖延症晚期": {
+                daily: "deadline是第一生产力。不到最后一刻绝不行动，但最后时刻的效率惊人。",
+                work: "任务拖到最后一刻才做，但总能卡点完成。领导对你的评价是'有能力但不够主动'。",
+                relationship: "约会迟到是常态，朋友已经习惯了。你觉得自己不是故意的，只是控制不好时间。",
+                advice: "把大任务拆成小任务，每完成一个就奖励自己。'先做5分钟'是战胜拖延的魔法咒语。"
+            },
+            "社恐重症": {
+                daily: "能打字绝不语音，能线上绝不见面。电梯里遇到不熟的同事，你会假装看手机。",
+                work: "开会时希望自己是透明的。被点名发言会心跳加速。团建是你最大的噩梦。",
+                relationship: "朋友都是认识多年的老友，新社交圈子基本为零。你享受独处，但偶尔也会感到孤独。",
+                advice: "从小社交开始：每天和一个人说一句话。不需要深入交流，打个招呼就够了。"
+            },
+            "卷心菜": {
+                daily: "想卷卷不动，想躺躺不平。看到别人努力会焦虑，自己努力又觉得累。",
+                work: "你处于一种矛盾状态：不想加班但看到同事在加班会心虚。周末休息也觉得有罪恶感。",
+                relationship: "在感情里也是纠结体。想要亲密又怕失去自由，想要独处又怕孤独。",
+                advice: "接受自己的矛盾。不是每个人都要当卷王，也不是每个人都要躺平。找到自己的节奏就好。"
+            },
+            "搞钱人": {
+                daily: "你的眼里只有钱。周末不是在搞钱就是在想怎么搞钱。购物车里全是'生财之道'的书。",
+                work: "你是职场卷王，加班是常态。你觉得现在的努力都是为了以后的自由。",
+                relationship: "恋爱？耽误搞钱。朋友？看有没有合作机会。你的社交圈基本等于人脉圈。",
+                advice: "赚钱很重要，但生活也很重要。每周留一天完全不想钱的事，陪陪家人或自己。"
+            },
+            "计划狂魔": {
+                daily: "你连上厕所都要列计划。手机里有五个日程APP，每个小时都要安排得明明白白。",
+                work: "你是项目管理的天才，但也是同事眼中的'控制狂'。你无法接受计划被打乱。",
+                relationship: "约会要提前一周预约，临时约你基本没空。伴侣觉得你什么都好，就是太'程式化'了。",
+                advice: "学会接受不确定性。每周留出半天'自由时间'，什么都不计划，想干嘛干嘛。"
+            },
+            "情感绝缘体": {
+                daily: "心如磐石，不为所动。朋友失恋哭得稀里哗啦，你在旁边递纸巾但心里毫无波澜。",
+                work: "你是职场上的'理性机器'，做决策从不感情用事。同事觉得你有点冷漠但很靠谱。",
+                relationship: "你不容易被感动，也不轻易动心。'莫挨老子'是你的恋爱态度。不是不想爱，是懒得爱。",
+                advice: "试着打开一点点心扉。从养宠物或植物开始，感受'在乎'的感觉。"
+            },
+            "恋爱脑晚期": {
+                daily: "你的情绪完全被对方牵着走。他回消息你开心一整天，他不理你你世界崩塌。",
+                work: "恋爱期间工作状态随感情波动。失恋后请假的理由永远是'身体不舒服'。",
+                relationship: "你一旦恋爱就失智，朋友劝你你听不进去。分手后需要很长时间才能走出来。",
+                advice: "把'他'从人生C位移开。每周至少安排两天'不恋爱日'，只做自己的事。"
+            },
+            "边界大师": {
+                daily: "你的边界感极强。不熟的同事问私人问题，你会直接说'不方便说'。",
+                work: "你会在入职第一天就亮明底线：不接受加班、不接受无薪工作。老板知道你不好惹。",
+                relationship: "恋爱中你是'理性派'，不会为爱失去自我。对方越界你会立刻提醒，不留情面。",
+                advice: "边界感是好事，但偶尔也可以放一放。对于真正在乎的人，可以适当放宽边界。"
+            }
+        };
+        
         // 人格对应的图片文件名
         var personalityImages = {
             "人间观察员": "observer.png",
@@ -351,6 +459,30 @@
             return scores;
         }
         
+        function renderDetailedAnalysis(personalityName) {
+            var analysis = personalityAnalysis[personalityName];
+            if (!analysis) return "";
+            
+            return `
+                <div class="analysis-block">
+                    <div class="analysis-title">📝 日常表现</div>
+                    <div class="analysis-text">${analysis.daily}</div>
+                </div>
+                <div class="analysis-block">
+                    <div class="analysis-title">💼 职场表现</div>
+                    <div class="analysis-text">${analysis.work}</div>
+                </div>
+                <div class="analysis-block">
+                    <div class="analysis-title">💕 人际关系</div>
+                    <div class="analysis-text">${analysis.relationship}</div>
+                </div>
+                <div class="analysis-block">
+                    <div class="analysis-title">🌱 成长建议</div>
+                    <div class="analysis-text">${analysis.advice}</div>
+                </div>
+            `;
+        }
+        
         function renderResult() {
             var answers = JSON.parse(localStorage.getItem('mental_answers'));
             var actualAge = JSON.parse(localStorage.getItem('mental_age'));
@@ -366,14 +498,15 @@
             document.getElementById('personalityName').innerHTML = personality.name;
             document.getElementById('personalityTag').innerHTML = personality.tag;
             document.getElementById('slogan').innerHTML = personality.slogan;
-            document.getElementById('descBox').innerHTML = personality.desc;
+            
+            // 渲染详细分析
+            document.getElementById('analysisSection').innerHTML = renderDetailedAnalysis(personality.name);
             
             // 设置卡通形象图片
             var imgFile = personalityImages[personality.name];
             if (imgFile) {
                 document.getElementById('personalityImg').src = 'images/' + imgFile;
             } else {
-                // 如果没有匹配的图片，显示默认emoji
                 document.getElementById('personalityImg').style.display = 'none';
                 document.getElementById('characterImage').innerHTML = '<div style="font-size: 80px;">🎭</div>';
             }
